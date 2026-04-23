@@ -31,8 +31,6 @@ def load_data(sheet):
 c1, c2 = st.columns(2)
 
 with c1:
-    st.markdown('<div class="chart-box">', unsafe_allow_html=True)
-    
     df_raw = load_data('Liquidez Monetaria')
     
     # Verificamos que el archivo tenga datos
