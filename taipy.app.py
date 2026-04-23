@@ -31,7 +31,7 @@ st.markdown("""
     </style>
     
     <div class="main-title-container">
-        <p class="title-line1">Banfanb, Banco Universal</p>
+        <p class="title-line1">BANFANB, Banco Universal</p>
         <p class="title-line2">Indicadores Macroeconómicos Nacionales</p>
         <p class="title-line3">Unidad Administrativa Integral de Riesgo</p>
     </div>
