@@ -17,7 +17,7 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
-ruta = "Data_Situacional_Ejemplo.xlsx"
+ruta = r"C:\Monitor_test\Data_Situacional_Ejemplo.xlsx"
 
 # CARGA DE DATOS MEJORADA
 def load_data(sheet):
@@ -31,73 +31,72 @@ def load_data(sheet):
 c1, c2 = st.columns(2)
 
 with c1:
+    # 1. LIMPIEZA DE DATOS
     df_raw = load_data('Liquidez Monetaria')
+    df = df_raw.dropna(subset=[df_raw.columns[6]]).tail(6)
     
-    # Verificamos que el archivo tenga datos
-    if not df_raw.empty:
-        # En lugar de usar índices numéricos [6], buscamos por nombre o posición real disponible
-        # Asumiremos que la fecha es la col 0 y los montos están en la última o penúltima
-        cols = df_raw.columns.tolist()
+    if not df.empty:
+        # 2. ENCABEZADO: Título y Botones con margen inferior para separar
+        # Añadimos un contenedor div con margin-bottom para crear el espacio
+        st.markdown('<div style="margin-bottom: 2px;">', unsafe_allow_html=True) 
         
-        # Limpieza: eliminamos filas donde la columna de datos principal sea NaN
-        # Intentamos usar la columna 6 si existe, si no, la última columna con datos
-        col_datos = cols[6] if len(cols) > 6 else cols[-1]
-        df = df_raw.dropna(subset=[col_datos]).tail(6)
+        head_col1, head_col2, head_col3 = st.columns([1.8, 1, 1])
         
-        if not df.empty:
-            st.markdown('<div style="margin-bottom: 20px;">', unsafe_allow_html=True)
-            head_col1, head_col2, head_col3 = st.columns([1.8, 1, 1])
-            
-            with head_col1:
-                st.markdown('<p class="grafico-titulo">Liquidez Monetaria</p>', unsafe_allow_html=True)
-            
-            # Valores para botones (usando la columna identificada)
-            ultimo_valor = df[col_datos].iloc[-1]
-            promedio_valor = df[col_datos].mean()
-            
-            # Variación (columna siguiente a la de datos, o calculada)
-            col_var = cols[7] if len(cols) > 7 else None
-            var_ultima = df[col_var].iloc[-1] if col_var else 0
+        with head_col1:
+            st.markdown('<p class="grafico-titulo">Liquidez Monetaria</p>', unsafe_allow_html=True)
+        
+        ultimo_valor = df.iloc[-1, 6]
+        var_ultima = df.iloc[-1, 7] if df.shape[1] > 7 else 0
+        promedio_valor = df.iloc[:, 6].mean()
 
-            with head_col2:
-                st.markdown(f"""
-                    <div style="background: white; border: 1px solid #dee2e6; border-radius: 8px; padding: 5px; text-align: center;">
-                        <p style="margin:0; font-size: 0.8vw; color: #666;">Actual</p>
-                        <p style="margin:0; font-size: 1.1vw; font-weight: bold; color: #333;">Bs. {ultimo_valor:,.0f}</p>
-                        <p style="margin:0; font-size: 0.8vw; color: #28a745;">↑ {var_ultima*100:.2f}%</p>
-                    </div>
-                """, unsafe_allow_html=True)
+        with head_col2:
+            st.markdown(f"""
+                <div style="background: white; border: 1px solid #dee2e6; border-radius: 8px; padding: 5px; text-align: center;">
+                    <p style="margin:0; font-size: 0.8vw; color: #666;">Actual</p>
+                    <p style="margin:0; font-size: 1.1vw; font-weight: bold; color: #333;">Bs. {ultimo_valor:,.0f}</p>
+                    <p style="margin:0; font-size: 0.8vw; color: #28a745;">↑ {var_ultima*100:.2f}%</p>
+                </div>
+            """, unsafe_allow_html=True)
 
-            with head_col3:
-                st.markdown(f"""
-                    <div style="background: white; border: 1px solid #dee2e6; border-radius: 8px; padding: 5px; text-align: center;">
-                        <p style="margin:0; font-size: 0.8vw; color: #666;">Promedio</p>
-                        <p style="margin:0; font-size: 1.1vw; font-weight: bold; color: #333;">Bs. {promedio_valor:,.0f}</p>
-                        <p style="margin:0; font-size: 0.8vw; color: transparent;">-</p>
-                    </div>
-                """, unsafe_allow_html=True)
-            
-            st.markdown('</div>', unsafe_allow_html=True)
+        with head_col3:
+            st.markdown(f"""
+                <div style="background: white; border: 1px solid #dee2e6; border-radius: 8px; padding: 5px; text-align: center;">
+                    <p style="margin:0; font-size: 0.8vw; color: #666;">Promedio</p>
+                    <p style="margin:0; font-size: 1.1vw; font-weight: bold; color: #333;">Bs. {promedio_valor:,.0f}</p>
+                    <p style="margin:0; font-size: 0.8vw; color: transparent;">-</p>
+                </div>
+            """, unsafe_allow_html=True)
+        
+        st.markdown('</div>', unsafe_allow_html=True) # Cierre del div de margen
 
-            # GRÁFICO PLOTLY
-            df['Fecha_F'] = df[cols[0]].dt.strftime('%d-%m-%Y')
-            fig = go.Figure()
-            fig.add_trace(go.Scatter(
-                x=df['Fecha_F'], y=df[col_datos], mode='lines+markers+text',
-                text=[f"{v/1e6:,.0f}MM" for v in df[col_datos]],
-                textposition="top center", textfont=dict(color='black', size=12),
-                line=dict(color='#2b5dda', width=1.5), marker=dict(color='#fd941c', size=10)
-            ))
-            
-            fig.update_layout(
-                plot_bgcolor='white', height=320, showlegend=False,
-                margin=dict(l=10, r=10, t=10, b=10),
-                yaxis=dict(showgrid=True, gridcolor='#eee', tickfont=dict(color='black', size=10), linecolor='gray', linewidth=1),
-                xaxis=dict(type='category', showgrid=False, tickfont=dict(color='black', size=10), linecolor='gray', linewidth=1)
-            )
-            st.plotly_chart(fig, use_container_width=True, config={'displayModeBar': False})
-    else:
-        st.warning("El archivo Excel está vacío o no se pudo leer correctamente.")
+        df['Fecha_Exacta'] = df.iloc[:, 0].dt.strftime('%d-%m-%Y') 
+        x_data = df['Fecha_Exacta'] 
+        y_data = df.iloc[:, 6] 
+        y_var = df.iloc[:, 7] if df.shape[1] > 7 else y_data.pct_change()
+
+        fig = go.Figure()
+        fig.add_trace(go.Scatter(
+            x=x_data, y=y_data, mode='lines+markers+text', name='Liquidez',
+            text=[f"{v/1e6:,.0f}MM" if v >= 1e6 else f"{v:,.0f}" for v in y_data],
+            textposition="top center", textfont=dict(color='black', size=12),
+            line=dict(color='#2b5dda', width=1), marker=dict(color='#fd941c', size=10)
+        ))
+        fig.add_trace(go.Scatter(
+            x=x_data, y=y_var, mode='lines+markers+text', name='Variación %',
+            text=[f"{v*100:.2f}%" if pd.notnull(v) else "" for v in y_var],
+            textposition="bottom center", textfont=dict(color='black', size=12),
+            line=dict(color='#43be95', width=1, dash='dot'), marker=dict(color='#43be95', size=10),
+            yaxis='y2'
+        ))
+
+        fig.update_layout(
+            plot_bgcolor='white', height=320, showlegend=False,
+            margin=dict(l=10, r=10, t=10, b=10), # Reducimos t=10 porque ya hay margen en el div
+            yaxis=dict(showgrid=True, gridcolor='#eee', tickfont=dict(color='black', size=10), linecolor='gray', linewidth=1, zeroline=False),
+            xaxis=dict(type='category', tickmode='array', tickvals=x_data, showgrid=False, tickfont=dict(color='black', size=10), linecolor='gray', linewidth=1),
+            yaxis2=dict(overlaying='y', side='right', showgrid=False, showticklabels=False, zeroline=False)
+        )
+        st.plotly_chart(fig, use_container_width=True, config={'displayModeBar': False})
     
     st.markdown('</div>', unsafe_allow_html=True)
 
