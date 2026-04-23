@@ -17,7 +17,7 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
-ruta = r"C:\Monitor_test\Data_Situacional_Ejemplo.xlsx"
+ruta = "Data_Situacional_Ejemplo.xlsx"
 
 # CARGA DE DATOS MEJORADA
 def load_data(sheet):
@@ -33,21 +33,11 @@ c1, c2 = st.columns(2)
 with c1:
     # 1. LIMPIEZA DE DATOS
     df_raw = load_data('Liquidez Monetaria')
-    
-    # --- MODIFICACIÓN DE SEGURIDAD ---
-    # Verificamos cuántas columnas hay realmente para no pedir la 6 si no existe
-    if not df_raw.empty:
-        num_cols = df_raw.shape[1]
-        col_idx = 6 if num_cols > 6 else num_cols - 1
-        col_var_idx = 7 if num_cols > 7 else col_idx # Si no hay col 7, usamos la misma
-        
-        df = df_raw.dropna(subset=[df_raw.columns[col_idx]]).tail(6)
-    else:
-        df = pd.DataFrame()
-    # ---------------------------------
+    df = df_raw.dropna(subset=[df_raw.columns[6]]).tail(6)
     
     if not df.empty:
         # 2. ENCABEZADO: Título y Botones con margen inferior para separar
+        # Añadimos un contenedor div con margin-bottom para crear el espacio
         st.markdown('<div style="margin-bottom: 2px;">', unsafe_allow_html=True) 
         
         head_col1, head_col2, head_col3 = st.columns([1.8, 1, 1])
@@ -55,10 +45,9 @@ with c1:
         with head_col1:
             st.markdown('<p class="grafico-titulo">Liquidez Monetaria</p>', unsafe_allow_html=True)
         
-        # Usamos los índices calculados arriba
-        ultimo_valor = df.iloc[-1, col_idx]
-        var_ultima = df.iloc[-1, col_var_idx] if num_cols > 7 else 0
-        promedio_valor = df.iloc[:, col_idx].mean()
+        ultimo_valor = df.iloc[-1, 6]
+        var_ultima = df.iloc[-1, 7] if df.shape[1] > 7 else 0
+        promedio_valor = df.iloc[:, 6].mean()
 
         with head_col2:
             st.markdown(f"""
@@ -78,12 +67,12 @@ with c1:
                 </div>
             """, unsafe_allow_html=True)
         
-        st.markdown('</div>', unsafe_allow_html=True) 
+        st.markdown('</div>', unsafe_allow_html=True) # Cierre del div de margen
 
         df['Fecha_Exacta'] = df.iloc[:, 0].dt.strftime('%d-%m-%Y') 
         x_data = df['Fecha_Exacta'] 
-        y_data = df.iloc[:, col_idx] 
-        y_var = df.iloc[:, col_var_idx] if num_cols > 7 else y_data.pct_change()
+        y_data = df.iloc[:, 6] 
+        y_var = df.iloc[:, 7] if df.shape[1] > 7 else y_data.pct_change()
 
         fig = go.Figure()
         fig.add_trace(go.Scatter(
@@ -102,7 +91,7 @@ with c1:
 
         fig.update_layout(
             plot_bgcolor='white', height=320, showlegend=False,
-            margin=dict(l=10, r=10, t=10, b=10),
+            margin=dict(l=10, r=10, t=10, b=10), # Reducimos t=10 porque ya hay margen en el div
             yaxis=dict(showgrid=True, gridcolor='#eee', tickfont=dict(color='black', size=10), linecolor='gray', linewidth=1, zeroline=False),
             xaxis=dict(type='category', tickmode='array', tickvals=x_data, showgrid=False, tickfont=dict(color='black', size=10), linecolor='gray', linewidth=1),
             yaxis2=dict(overlaying='y', side='right', showgrid=False, showticklabels=False, zeroline=False)
