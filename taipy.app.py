@@ -439,4 +439,24 @@ with c6:
         fig.update_layout(
             plot_bgcolor='white', 
             height=200, 
-            showlegend
+            showlegend=False,
+            margin=dict(l=10, r=10, t=25, b=10),
+            yaxis=dict(
+                showgrid=True, 
+                gridcolor='#eee', 
+                tickfont=dict(color='black', size=11),
+                linecolor='gray', # Gris fuerte
+                linewidth=1,
+                zeroline=False
+            ),
+            xaxis=dict(
+                type='category', 
+                showgrid=False, 
+                tickfont=dict(color='black', size=11),
+                linecolor='gray', # Gris fuerte
+                linewidth=1
+            )
+        )
+        
+        st.plotly_chart(fig, use_container_width=True, config={'displayModeBar': False})
+    st.markdown('</div>', unsafe_allow_html=True)
