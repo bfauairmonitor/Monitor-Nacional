@@ -33,51 +33,73 @@ c1, c2 = st.columns(2)
 with c1:
     st.markdown('<div class="chart-box">', unsafe_allow_html=True)
     
-    # 1. CARGA SEGURA
     df_raw = load_data('Liquidez Monetaria')
     
-    # Verificamos si el dataframe tiene datos antes de seguir
-    if not df_raw.empty and df_raw.shape[1] > 6:
-        # Limpiamos filas vacías basándonos en la columna de montos
-        df = df_raw.dropna(subset=[df_raw.columns[6]]).tail(6)
+    # Verificamos que el archivo tenga datos
+    if not df_raw.empty:
+        # En lugar de usar índices numéricos [6], buscamos por nombre o posición real disponible
+        # Asumiremos que la fecha es la col 0 y los montos están en la última o penúltima
+        cols = df_raw.columns.tolist()
         
-        # 2. ENCABEZADO
-        st.markdown('<div style="margin-bottom: 20px;">', unsafe_allow_html=True)
-        head_col1, head_col2, head_col3 = st.columns([1.8, 1, 1])
+        # Limpieza: eliminamos filas donde la columna de datos principal sea NaN
+        # Intentamos usar la columna 6 si existe, si no, la última columna con datos
+        col_datos = cols[6] if len(cols) > 6 else cols[-1]
+        df = df_raw.dropna(subset=[col_datos]).tail(6)
         
-        with head_col1:
-            st.markdown('<p class="grafico-titulo">Liquidez Monetaria</p>', unsafe_allow_html=True)
-        
-        # Cálculos seguros
-        ultimo_valor = df.iloc[-1, 6] if not df.empty else 0
-        var_ultima = df.iloc[-1, 7] if df.shape[1] > 7 else 0
-        promedio_valor = df.iloc[:, 6].mean() if not df.empty else 0
+        if not df.empty:
+            st.markdown('<div style="margin-bottom: 20px;">', unsafe_allow_html=True)
+            head_col1, head_col2, head_col3 = st.columns([1.8, 1, 1])
+            
+            with head_col1:
+                st.markdown('<p class="grafico-titulo">Liquidez Monetaria</p>', unsafe_allow_html=True)
+            
+            # Valores para botones (usando la columna identificada)
+            ultimo_valor = df[col_datos].iloc[-1]
+            promedio_valor = df[col_datos].mean()
+            
+            # Variación (columna siguiente a la de datos, o calculada)
+            col_var = cols[7] if len(cols) > 7 else None
+            var_ultima = df[col_var].iloc[-1] if col_var else 0
 
-        # Botón Actual
-        with head_col2:
-            st.markdown(f"""
-                <div style="background: white; border: 1px solid #dee2e6; border-radius: 8px; padding: 5px; text-align: center;">
-                    <p style="margin:0; font-size: 0.8vw; color: #666;">Actual</p>
-                    <p style="margin:0; font-size: 1.1vw; font-weight: bold; color: #333;">Bs. {ultimo_valor:,.0f}</p>
-                    <p style="margin:0; font-size: 0.8vw; color: #28a745;">↑ {var_ultima*100:.2f}%</p>
-                </div>
-            """, unsafe_allow_html=True)
+            with head_col2:
+                st.markdown(f"""
+                    <div style="background: white; border: 1px solid #dee2e6; border-radius: 8px; padding: 5px; text-align: center;">
+                        <p style="margin:0; font-size: 0.8vw; color: #666;">Actual</p>
+                        <p style="margin:0; font-size: 1.1vw; font-weight: bold; color: #333;">Bs. {ultimo_valor:,.0f}</p>
+                        <p style="margin:0; font-size: 0.8vw; color: #28a745;">↑ {var_ultima*100:.2f}%</p>
+                    </div>
+                """, unsafe_allow_html=True)
 
-        # Botón Promedio
-        with head_col3:
-            st.markdown(f"""
-                <div style="background: white; border: 1px solid #dee2e6; border-radius: 8px; padding: 5px; text-align: center;">
-                    <p style="margin:0; font-size: 0.8vw; color: #666;">Promedio</p>
-                    <p style="margin:0; font-size: 1.1vw; font-weight: bold; color: #333;">Bs. {promedio_valor:,.0f}</p>
-                    <p style="margin:0; font-size: 0.8vw; color: transparent;">-</p>
-                </div>
-            """, unsafe_allow_html=True)
-        
-        st.markdown('</div>', unsafe_allow_html=True)
+            with head_col3:
+                st.markdown(f"""
+                    <div style="background: white; border: 1px solid #dee2e6; border-radius: 8px; padding: 5px; text-align: center;">
+                        <p style="margin:0; font-size: 0.8vw; color: #666;">Promedio</p>
+                        <p style="margin:0; font-size: 1.1vw; font-weight: bold; color: #333;">Bs. {promedio_valor:,.0f}</p>
+                        <p style="margin:0; font-size: 0.8vw; color: transparent;">-</p>
+                    </div>
+                """, unsafe_allow_html=True)
+            
+            st.markdown('</div>', unsafe_allow_html=True)
 
-        # --- EL RESTO DEL GRÁFICO (PLOTLY) SIGUE IGUAL ---
+            # GRÁFICO PLOTLY
+            df['Fecha_F'] = df[cols[0]].dt.strftime('%d-%m-%Y')
+            fig = go.Figure()
+            fig.add_trace(go.Scatter(
+                x=df['Fecha_F'], y=df[col_datos], mode='lines+markers+text',
+                text=[f"{v/1e6:,.0f}MM" for v in df[col_datos]],
+                textposition="top center", textfont=dict(color='black', size=12),
+                line=dict(color='#2b5dda', width=1.5), marker=dict(color='#fd941c', size=10)
+            ))
+            
+            fig.update_layout(
+                plot_bgcolor='white', height=320, showlegend=False,
+                margin=dict(l=10, r=10, t=10, b=10),
+                yaxis=dict(showgrid=True, gridcolor='#eee', tickfont=dict(color='black', size=10), linecolor='gray', linewidth=1),
+                xaxis=dict(type='category', showgrid=False, tickfont=dict(color='black', size=10), linecolor='gray', linewidth=1)
+            )
+            st.plotly_chart(fig, use_container_width=True, config={'displayModeBar': False})
     else:
-        st.error("No se encontraron suficientes columnas en la hoja 'Liquidez Monetaria'. Revisa el Excel.")
+        st.warning("El archivo Excel está vacío o no se pudo leer correctamente.")
     
     st.markdown('</div>', unsafe_allow_html=True)
 
