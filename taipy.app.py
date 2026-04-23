@@ -17,7 +17,7 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
-ruta = r"C:\Monitor_test\Data_Situacional_Ejemplo.xlsx"
+ruta = "Data_Situacional_Ejemplo.xlsx"
 
 # CARGA DE DATOS MEJORADA
 def load_data(sheet):
