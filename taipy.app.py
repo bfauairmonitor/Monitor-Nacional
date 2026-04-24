@@ -20,14 +20,37 @@ st.markdown("""
     
     .block-container { padding: 1rem !important; background-color: #f8f9fc; }
     
-    /* Estilo del Encabezado Triple */
-    .main-title-container { text-align: center; margin-bottom: 20px; font-family: 'Poppins'; }
-    .title-line1 { color: #2b5dda; font-size: 4vw; font-weight: 600; margin: 0; }
-    .title-line2 { color: black; font-size: 2.2vw; font-weight: 300; margin: 0; }
-    .title-line3 { color: black; font-size: 1.2vw; font-weight: 200; margin: 0; }
+    /* ESTILO DEL ENCABEZADO TRIPLE CORREGIDO */
+    .main-title-container { 
+        text-align: center; 
+        margin-top: 10px;
+        margin-bottom: 30px; 
+        font-family: 'Poppins', sans-serif; 
+    }
     
-    .grafico-titulo { color: #2b5dda; font-family: 'Poppins'; font-size: 1.2vw; font-weight: 400; margin-bottom: 5px;text-align: center;}
-    .chart-box { border: 1px solid #2b5dda; border-radius: 12px; background-color: white; padding: 10px; margin-bottom: 10px; height: 100%; }
+    .title-line1 { 
+        color: #2b5dda; 
+        font-size: 30px !important; /* Tamaño fijo grande para el Título */
+        font-weight: 600; 
+        line-height: 1.1;
+        margin: 0; 
+    }
+    
+    .title-line2 { 
+        color: #333333; 
+        font-size: 17px !important; /* Tamaño fijo para el Subtítulo */
+        font-weight: 300; 
+        margin-top: 5px; 
+    }
+    
+    /* Opcional: Para que sea responsivo en móviles pero mantenga buen tamaño */
+    @media (max-width: 768px) {
+        .title-line1 { font-size: 6vw !important; }
+        .title-line2 { font-size: 2vw !important; }
+    }
+
+    .grafico-titulo { color: #2b5dda; font-family: 'Poppins'; font-size: 1.2vw; font-weight: 400; margin-bottom: 5px; text-align: center;}
+    .chart-box { border: 1px solid #dee2e6; border-radius: 15px; background-color: white; padding: 15px; margin-bottom: 20px; }
     </style>
     
     <div class="main-title-container">
@@ -100,7 +123,7 @@ with c1:
             text=[f"{v/1e6:,.0f}MM" if v >= 1e6 else f"{v:,.0f}" for v in y_data],
             textposition="top center", 
             textfont=dict(color='#2b5dda', size=16), # <--- AJUSTA ESTE VALOR
-            line=dict(color='#2b5dda', width=2), marker=dict(color="#07cdff", size=10),
+            line=dict(color='#2b5dda', width=2), marker=dict(color="#07cdff", size=7),
             cliponaxis=False
         ))
         
@@ -109,7 +132,7 @@ with c1:
             text=[f"{v*100:.2f}%" if pd.notnull(v) else "" for v in y_var],
             textposition="bottom center", 
             textfont=dict(color='black', size=16), # <--- AJUSTA ESTE VALOR
-            line=dict(color='#6A1B9A', width=2, dash='dot'), marker=dict(color='#6A1B9A', size=10),
+            line=dict(color='#6A1B9A', width=2, dash='dot'), marker=dict(color='#6A1B9A', size=7),
             yaxis='y2',
             cliponaxis=False
         ))
@@ -120,13 +143,13 @@ with c1:
             margin=dict(l=10, r=10, t=10, b=10),
             yaxis=dict(
                 showgrid=True, gridcolor='#eee', 
-                tickfont=dict(color='black', size=14), # <--- AJUSTA ESTE VALOR
+                tickfont=dict(color='black', size=16), # <--- AJUSTA ESTE VALOR
                 linecolor='gray', linewidth=2, zeroline=False
             ),
             xaxis=dict(
                 type='category', tickmode='array', tickvals=x_data, 
                 showgrid=False, 
-                tickfont=dict(color='black', size=14), # <--- AJUSTA ESTE VALOR
+                tickfont=dict(color='black', size=16), # <--- AJUSTA ESTE VALOR
                 linecolor='gray', linewidth=2
             ),
             yaxis2=dict(overlaying='y', side='right', showgrid=False, showticklabels=False, zeroline=False)
@@ -203,8 +226,8 @@ with c2:
 
         fig.update_layout(
             plot_bgcolor='white', height=320, showlegend=False, margin=dict(l=10, r=10, t=10, b=10),
-            yaxis=dict(showgrid=True, gridcolor='#eee', tickfont=dict(color='black', size=14), linecolor='gray', linewidth=1, zeroline=False),
-            xaxis=dict(type='category', showgrid=False, tickfont=dict(color='black', size=14), linecolor='gray', linewidth=1),
+            yaxis=dict(showgrid=True, gridcolor='#eee', tickfont=dict(color='black', size=16), linecolor='gray', linewidth=1, zeroline=False),
+            xaxis=dict(type='category', showgrid=False, tickfont=dict(color='black', size=16), linecolor='gray', linewidth=1),
             yaxis2=dict(overlaying='y', side='right', showgrid=False, showticklabels=False, zeroline=False)
         )
         st.plotly_chart(fig, use_container_width=True, config={'displayModeBar': False})
@@ -264,7 +287,7 @@ with c3:
             yaxis=dict(
                 showgrid=True, 
                 gridcolor='#eee', 
-                tickfont=dict(color='black', size=12),
+                tickfont=dict(color='black', size=13),
                 linecolor='gray',
                 linewidth=2,
                 zeroline=False
@@ -272,7 +295,7 @@ with c3:
             xaxis=dict(
                 type='category',
                 showgrid=False, 
-                tickfont=dict(color='black', size=12),
+                tickfont=dict(color='black', size=13),
                 linecolor='gray',
                 linewidth=2
             ),
@@ -342,7 +365,7 @@ with c4:
             yaxis=dict(
                 showgrid=True, 
                 gridcolor='#eee', 
-                tickfont=dict(color='black', size=12),
+                tickfont=dict(color='black', size=13),
                 linecolor='gray', # Gris intenso
                 linewidth=2,
                 zeroline=False
@@ -350,7 +373,7 @@ with c4:
             xaxis=dict(
                 type='category',
                 showgrid=False, 
-                tickfont=dict(color='black', size=12),
+                tickfont=dict(color='black', size=13),
                 linecolor='gray', # Gris intenso
                 linewidth=2
             ),
@@ -405,7 +428,7 @@ with c5:
             yaxis=dict(
                 showgrid=True, 
                 gridcolor='#eee', 
-                tickfont=dict(color='black', size=12),
+                tickfont=dict(color='black', size=13),
                 linecolor='gray',
                 linewidth=2,
                 zeroline=False,
@@ -415,7 +438,7 @@ with c5:
             xaxis=dict(
                 type='category', 
                 showgrid=False, 
-                tickfont=dict(color='black', size=12),
+                tickfont=dict(color='black', size=13),
                 linecolor='gray',
                 linewidth=2
             )
@@ -428,12 +451,11 @@ with c6:
         # TÍTULO
         st.markdown('<p class="grafico-titulo" style="font-size:1vw; text-align:center;">Tasa Overnight (Promedio Mensual)</p>', unsafe_allow_html=True)
         
-        # 1. CARGA DE DATOS (Asegúrate de que load_data use @st.cache_data arriba en tu código)
+        # 1. CARGA DE DATOS
         df_raw = load_data('Tasa Overnight Mensual')
         
-        # 2. FILTRADO RÁPIDO
         if df_raw is not None and not df_raw.empty:
-            # Creamos una copia para evitar problemas de mutación de caché
+            # 2. FILTRADO
             df_c6 = df_raw.dropna(subset=[df_raw.columns[0], df_raw.columns[3]]).tail(3).copy()
             
             x_data_c6 = df_c6.iloc[:, 0]
@@ -446,46 +468,41 @@ with c6:
                 y=y_data_c6, 
                 mode='lines+markers+text',
                 name='Promedio Ponderado',
-                text=[f"{v*100:.2f}%" if pd.notnull(v) else "" for v in y_data_c6],
+                # Mantenemos los dos decimales para precisión
+                text=[f"{v*100:,.2f}%" if pd.notnull(v) else "" for v in y_data_c6],
                 textposition="top center",
                 cliponaxis=False,
-                textfont=dict(color='black', size=13),
+                textfont=dict(color='black', size=14),
                 line=dict(color='#2b5dda', width=2), 
-                marker=dict(color='#2b5dda', size=6),
+                marker=dict(color='#2b5dda', size=7),
             ))
 
             fig_c6.update_layout(
                 plot_bgcolor='white', 
                 height=200, 
                 showlegend=False,
-                # 'staticPlot': True en el config (abajo) lo hará cargar instantáneamente
                 margin=dict(l=10, r=10, t=35, b=10),
                 yaxis=dict(
                     showgrid=True, 
                     gridcolor='#eee', 
-                    tickfont=dict(color='black', size=12),
+                    tickfont=dict(color='black', size=10),
                     linecolor='gray',
                     linewidth=2,
                     zeroline=False,
                     tickformat=".0%",
-                    dtick=0.5,
-                    range=[y_data_c6.min() * 0.5, y_data_c6.max() * 1.5]
+                    # ELIMINAMOS dtick para que Plotly calcule saltos lógicos (ej. cada 5000%)
+                    # y no se amontonen las etiquetas.
+                    range=[y_data_c6.min() * 0.5, y_data_c6.max() * 1.4]
                 ),
                 xaxis=dict(
                     type='category', 
                     showgrid=False, 
-                    tickfont=dict(color='black', size=12),
+                    tickfont=dict(color='black', size=14),
                     linecolor='gray',
                     linewidth=2
                 )
             )
             
-            # CONFIGURACIÓN DE ALTA VELOCIDAD:
-            # responsive=False y displayModeBar=False reducen la carga de JS
-            st.plotly_chart(fig_c6, use_container_width=True, config={
-                'displayModeBar': False, 
-                'staticPlot': False, # Cambiar a True si quieres que sea una imagen fija (vuela de rápido)
-                'responsive': True
-            })
+            st.plotly_chart(fig_c6, use_container_width=True, config={'displayModeBar': False})
         else:
             st.warning("No se encontraron datos en la hoja Tasa Overnight Mensual.")
