@@ -5,7 +5,7 @@ from streamlit_autorefresh import st_autorefresh
 
 # CONFIGURACIÓN DE PÁGINA
 st.set_page_config(page_title="Monitor Financiero", layout="wide", initial_sidebar_state="collapsed")
-st_autorefresh(interval=100000, key="datarefresh")
+st_autorefresh(interval=90000, key="datarefresh")
 
 # CSS: Mantenemos tu estilo y agregamos el del encabezado y ocultar menús
 st.markdown("""
