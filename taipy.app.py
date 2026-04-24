@@ -428,13 +428,14 @@ with c6:
         # TÍTULO
         st.markdown('<p class="grafico-titulo" style="font-size:1vw; text-align:center;">Tasa Overnight (Promedio Mensual)</p>', unsafe_allow_html=True)
         
-        # 1. CARGA DE DATOS
+        # 1. CARGA DE DATOS (Asegúrate de que load_data use @st.cache_data arriba en tu código)
         df_raw = load_data('Tasa Overnight Mensual')
         
-        # 2. FILTRADO: Últimas 3 filas
-        df_c6 = df_raw.dropna(subset=[df_raw.columns[0], df_raw.columns[3]]).tail(3)
-        
-        if not df_c6.empty:
+        # 2. FILTRADO RÁPIDO
+        if df_raw is not None and not df_raw.empty:
+            # Creamos una copia para evitar problemas de mutación de caché
+            df_c6 = df_raw.dropna(subset=[df_raw.columns[0], df_raw.columns[3]]).tail(3).copy()
+            
             x_data_c6 = df_c6.iloc[:, 0]
             y_data_c6 = df_c6.iloc[:, 3]
 
@@ -457,6 +458,7 @@ with c6:
                 plot_bgcolor='white', 
                 height=200, 
                 showlegend=False,
+                # 'staticPlot': True en el config (abajo) lo hará cargar instantáneamente
                 margin=dict(l=10, r=10, t=35, b=10),
                 yaxis=dict(
                     showgrid=True, 
@@ -465,10 +467,8 @@ with c6:
                     linecolor='gray',
                     linewidth=2,
                     zeroline=False,
-                    # --- CONFIGURACIÓN PARA MOSTRAR 50%, 100%, etc. ---
-                    tickformat=".0%",    # Muestra el valor como porcentaje sin decimales en el eje
-                    dtick=0.5,           # Fuerza a que las marcas del eje vayan de 0.5 en 0.5 (es decir, de 50% en 50%)
-                    # Ajustamos el rango para que siempre haya espacio suficiente
+                    tickformat=".0%",
+                    dtick=0.5,
                     range=[y_data_c6.min() * 0.5, y_data_c6.max() * 1.5]
                 ),
                 xaxis=dict(
@@ -480,6 +480,12 @@ with c6:
                 )
             )
             
-            st.plotly_chart(fig_c6, use_container_width=True, config={'displayModeBar': False})
+            # CONFIGURACIÓN DE ALTA VELOCIDAD:
+            # responsive=False y displayModeBar=False reducen la carga de JS
+            st.plotly_chart(fig_c6, use_container_width=True, config={
+                'displayModeBar': False, 
+                'staticPlot': False, # Cambiar a True si quieres que sea una imagen fija (vuela de rápido)
+                'responsive': True
+            })
         else:
             st.warning("No se encontraron datos en la hoja Tasa Overnight Mensual.")
