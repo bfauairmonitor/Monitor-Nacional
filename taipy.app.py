@@ -168,7 +168,7 @@ with c2:
         head_col1, head_col2, head_col3 = st.columns([1.8, 1, 1])
         
         with head_col1:
-            st.markdown('<p class="grafico-titulo">Reservas Internacionales en Dolares</p>', unsafe_allow_html=True)
+            st.markdown('<p class="grafico-titulo">Reservas Internacionales en Dolares$</p>', unsafe_allow_html=True)
         
         # --- CORRECCIÓN DEL ERROR DE ÍNDICE ---
         idx_max = df.iloc[:, 3].idxmax()
@@ -448,61 +448,64 @@ with c5:
     st.markdown('</div>', unsafe_allow_html=True)
 
 with c6:
-        # TÍTULO
-        st.markdown('<p class="grafico-titulo" style="font-size:1vw; text-align:center;">Tasa Overnight (Promedio Mensual)</p>', unsafe_allow_html=True)
+    # TÍTULO
+    st.markdown('<p class="grafico-titulo" style="font-size:1vw; text-align:center;">Tasa Overnight (Promedio Mensual)</p>', unsafe_allow_html=True)
+    
+    # 1. CARGA DE DATOS
+    df_raw = load_data('Tasa Overnight Mensual')
+    
+    if df_raw is not None and not df_raw.empty:
+        # 2. LIMPIEZA Y FILTRADO
+        df_c6 = df_raw.dropna(subset=[df_raw.columns[3]]).tail(3).copy()
         
-        # 1. CARGA DE DATOS
-        df_raw = load_data('Tasa Overnight Mensual')
-        
-        if df_raw is not None and not df_raw.empty:
-            # 2. FILTRADO
-            df_c6 = df_raw.dropna(subset=[df_raw.columns[0], df_raw.columns[3]]).tail(3).copy()
-            
-            x_data_c6 = df_c6.iloc[:, 0]
-            y_data_c6 = df_c6.iloc[:, 3]
+        x_data_c6 = df_c6.iloc[:, 0]
+        y_data_c6 = df_c6.iloc[:, 3] # Si aquí hay 317.51, se usará 317.51
 
-            fig_c6 = go.Figure()
+        fig_c6 = go.Figure()
 
-            fig_c6.add_trace(go.Scatter(
-                x=x_data_c6, 
-                y=y_data_c6, 
-                mode='lines+markers+text',
-                name='Promedio Ponderado',
-                # Mantenemos los dos decimales para precisión
-                text=[f"{v*100:,.2f}%" if pd.notnull(v) else "" for v in y_data_c6],
-                textposition="top center",
-                cliponaxis=False,
-                textfont=dict(color='black', size=14),
-                line=dict(color='#2b5dda', width=2), 
-                marker=dict(color='#2b5dda', size=7),
-            ))
+        fig_c6.add_trace(go.Scatter(
+            x=x_data_c6, 
+            y=y_data_c6, 
+            mode='lines+markers+text',
+            name='Promedio Ponderado',
+            # CORRECCIÓN EN EL GRÁFICO: Usamos f-string para poner el % como texto simple
+            text=[f"{v:,.2f}%" for v in y_data_c6],
+            textposition="top center",
+            cliponaxis=False,
+            textfont=dict(color='black', size=14),
+            line=dict(color='#2b5dda', width=2), 
+            marker=dict(color='#2b5dda', size=7),
+        ))
 
-            fig_c6.update_layout(
-                plot_bgcolor='white', 
-                height=200, 
-                showlegend=False,
-                margin=dict(l=10, r=10, t=35, b=10),
-                yaxis=dict(
-                    showgrid=True, 
-                    gridcolor='#eee', 
-                    tickfont=dict(color='black', size=10),
-                    linecolor='gray',
-                    linewidth=2,
-                    zeroline=False,
-                    tickformat=".0%",
-                    # ELIMINAMOS dtick para que Plotly calcule saltos lógicos (ej. cada 5000%)
-                    # y no se amontonen las etiquetas.
-                    range=[y_data_c6.min() * 0.5, y_data_c6.max() * 1.4]
-                ),
-                xaxis=dict(
-                    type='category', 
-                    showgrid=False, 
-                    tickfont=dict(color='black', size=14),
-                    linecolor='gray',
-                    linewidth=2
-                )
+        fig_c6.update_layout(
+            plot_bgcolor='white', 
+            height=200, 
+            showlegend=False,
+            margin=dict(l=10, r=10, t=35, b=10),
+            yaxis=dict(
+                showgrid=True, 
+                gridcolor='#eee', 
+                tickfont=dict(color='black', size=10),
+                linecolor='gray',
+                linewidth=2,
+                zeroline=False,
+                # CORRECCIÓN EN EL EJE Y: 
+                # tickformat=".2f" muestra el número tal cual. 
+                # ticksuffix="%" agrega el símbolo sin hacer cálculos matemáticos.
+                tickformat=".2f", 
+                ticksuffix="%", 
+                range=[y_data_c6.min() * 0.8, y_data_c6.max() * 1.2]
+            ),
+            xaxis=dict(
+                type='category', 
+                showgrid=False, 
+                tickfont=dict(color='black', size=14),
+                linecolor='gray',
+                linewidth=2
             )
-            
-            st.plotly_chart(fig_c6, use_container_width=True, config={'displayModeBar': False})
-        else:
-            st.warning("No se encontraron datos en la hoja Tasa Overnight Mensual.")
+        )
+        
+        # 3. MOSTRAR GRÁFICO
+        st.plotly_chart(fig_c6, use_container_width=True, config={'displayModeBar': False})
+    else:
+        st.warning("No hay datos disponibles.")
