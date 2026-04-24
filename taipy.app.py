@@ -168,7 +168,7 @@ with c2:
         head_col1, head_col2, head_col3 = st.columns([1.8, 1, 1])
         
         with head_col1:
-            st.markdown('<p class="grafico-titulo">Reservas Internacionales en Dolares$</p>', unsafe_allow_html=True)
+            st.markdown('<p class="grafico-titulo">Reservas Internacionales en Dolares $</p>', unsafe_allow_html=True)
         
         # --- CORRECCIÓN DEL ERROR DE ÍNDICE ---
         idx_max = df.iloc[:, 3].idxmax()
