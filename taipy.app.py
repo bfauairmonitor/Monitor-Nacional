@@ -11,6 +11,7 @@ from datetime import datetime, timedelta
 REFRESH_INT = 600000 
 C_FONDO = "#0E1117"
 C_AZUL = "#2b5dda"
+C_TITULO = "#87CEEB"
 C_NARANJA = "#FFDEAD"
 C_BLANCO = "#FFFFFF"
 ALT_SUP = 320
@@ -44,7 +45,7 @@ display: flex; justify-content: space-between; align-items: center;
 padding: 15px 5px; background-color: {C_FONDO}; 
 border-bottom: 2px solid #444; height: 10vh; margin-bottom: 30px;
 }}
-.title-main {{ font-size: 3rem; font-weight: bold; margin: 0; color: {C_AZUL}; }}
+.title-main {{ font-size: 3rem; font-weight: bold; margin: 0; color: {C_TITULO}; }}
 .subtitle-sub {{ font-size: 1.7rem; color: #ffffff; margin: 0; }}
 .update-text {{ font-size: 1rem; color: {C_NARANJA}; text-align: right; line-height: 1.1; }}
 [data-testid="stVerticalBlock"] {{ gap: 0rem !important; }}
@@ -73,7 +74,7 @@ st.markdown(f"""
 <div style="display: flex; align-items: center; gap: 20px;">
 {logo_html}
 <div>
-<p class="title-main">Unidad Administrativa Integral de Riesgo</p>
+<p class="title-main">UNIDAD ADMINISTRATIVA INTEGRAL DE RIESGO</p>
 <p class="subtitle-sub">Indicadores Macroeconómicos BCV.</p>
 </div>
 </div>
