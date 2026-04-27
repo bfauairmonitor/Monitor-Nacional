@@ -12,7 +12,7 @@ from datetime import datetime
 REFRESH_INT = 600000 
 C_FONDO = "#0E1117"
 C_AZUL = "#2b5dda"
-C_NARANJA = "#A52A2A"
+C_NARANJA = "#F4A460"
 ALT_SUP = 320
 ALT_INF = 350
 
