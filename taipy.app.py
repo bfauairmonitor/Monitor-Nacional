@@ -48,6 +48,8 @@ border-bottom: 2px solid #444; height: 10vh; margin-bottom: 30px;
 .subtitle-sub {{ font-size: 1.7rem; color: #ffffff; margin: 0; }}
 .update-text {{ font-size: 1rem; color: {C_NARANJA}; text-align: right; line-height: 1.1; }}
 [data-testid="stVerticalBlock"] {{ gap: 0rem !important; }}
+.st-emotion-cache-18kf3ut{{
+margin-top:20px;}}
 </style>
 """, unsafe_allow_html=True)
 # ==========================================
