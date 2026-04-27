@@ -139,7 +139,7 @@ with col_sup_izq: #-------------------------------------------------------------
     except Exception as e: 
         st.error(f"Error G1: {e}")
         
-with col_sup_der: #----------------------------------------------------------------------------------------------------------- RESERVAS EXCEDENTARIAS
+with col_sup_der: #------------------------------------------------------------------------- RESERVAS EXCEDENTARIAS
     try:
         # 1. CARGA Y PROCESAMIENTO DE DATOS
         df2 = pd.read_excel('Datos_Macroeconomicos.xlsx', 
@@ -192,7 +192,7 @@ with col_sup_der: #-------------------------------------------------------------
 # ==========================================
 col_inf_1, col_inf_2, col_inf_3, col_inf_4 = st.columns([0.2, 0.2, 0.3, 0.3])
 
-with col_inf_1: #-----------------------------------------------------------------------------------------TASA OVERNIGHT MENSUAL
+with col_inf_1: #------------------------------------------------------------------------------------TASA OVERNIGHT MENSUAL
     try:
         # 1. EXTRACCIÓN Y LIMPIEZA DE DATOS
         df3 = pd.read_excel('Datos_Macroeconomicos.xlsx', 
@@ -230,7 +230,7 @@ with col_inf_1: #---------------------------------------------------------------
                 showticklabels=False, 
                 gridcolor='#222222'
             ), 
-            font=dict(color=C_AZUL)
+            font=dict(color='#2F4F4F')
         )
         # 4. RENDERIZADO
         st.plotly_chart(
