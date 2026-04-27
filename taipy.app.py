@@ -43,8 +43,8 @@ header {
 
 /* 3. Ajustes del contenedor principal de la App */
 .stApp {
-    margin-top: -90px !important;
-    background-color: {C_FONDO} !important;
+    margin-top: -90px;
+    background-color: {C_FONDO};
 }
 
 /* 4. Configuración del contenedor de bloques (márgenes y ancho) */
