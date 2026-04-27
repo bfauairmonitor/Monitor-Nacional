@@ -13,6 +13,7 @@ REFRESH_INT = 600000
 C_FONDO = "#0E1117"
 C_AZUL = "#2b5dda"
 C_NARANJA = "#F4A460"
+C_BLANCO = "#FFFFFF"
 ALT_SUP = 320
 ALT_INF = 350
 
@@ -140,7 +141,7 @@ with col_sup_izq: #-------------------------------------------------------------
                 gridcolor='#222222', 
                 tickfont=dict(color="white")
             ), 
-            font=dict(color="#2b5dda") # Aquí es donde definiste el color del título
+            font=dict(color="#ffffff") # Aquí es donde definiste el color del título
         )
         
         # 4. RENDERIZADO EN STREAMLIT
@@ -153,7 +154,7 @@ with col_sup_izq: #-------------------------------------------------------------
     except Exception as e: 
         st.error(f"Error G1: {e}")
 
-with col_sup_der: #-------------------------------------------------------------------------- RESERVAS EXCEDENTARIAS
+with col_sup_der: #----------------------------------------------------------------------------------------------------------- RESERVAS EXCEDENTARIAS
     try:
         # 1. CARGA Y PROCESAMIENTO DE DATOS
         df2 = pd.read_excel('Datos_Macroeconomicos.xlsx', 
@@ -195,7 +196,7 @@ with col_sup_der: #-------------------------------------------------------------
                 gridcolor='#222222', 
                 tickfont=dict(color="white")
             ), 
-            font=dict(color=C_AZUL)
+            font=dict(color=C_BLANCO)
         )
         
         # 4. RENDERIZADO
