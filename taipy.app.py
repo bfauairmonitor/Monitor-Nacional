@@ -63,7 +63,10 @@ st_autorefresh(interval=REFRESH_INT, key="datarefresh")
 ahora = datetime.now().strftime("%d/%m/%Y %I:%M %p")
 logo_path = Path("assets/logo.png")
 logo_b64 = get_base64(logo_path)
-logo_html = f'<img src="data:image/png;base64,{logo_b64}" style="height:5vh;">' if logo_b64 else ''
+
+# CORRECCIÓN LOGO: Ajuste de contenedor para visibilidad
+logo_html = f'<img src="data:image/png;base64,{logo_b64}" style="height:60px; margin-right:20px;">' if logo_b64 else ''
+
 # Render de Encabezado (Sin espacios al inicio)
 st.markdown(f"""
 <div class="header-container">
