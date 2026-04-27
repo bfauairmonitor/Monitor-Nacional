@@ -50,6 +50,8 @@ border-bottom: 2px solid #444; height: 10vh; margin-bottom: 30px;
 [data-testid="stVerticalBlock"] {{ gap: 0rem !important; }}
 .st-emotion-cache-18kf3ut{{
 margin-top:20px;}}
+.stHorizontalBlock{{
+margin-top:10px;}}
 </style>
 """, unsafe_allow_html=True)
 # ==========================================
@@ -112,7 +114,8 @@ with col_sup_izq: #-------------------------------------------------------------
             ), 
             textfont=dict(
                 size=17, 
-                color="white"
+                color="white",
+                weight=300
             )
         ))
         # 3. DISEÑO Y ESTÉTICA (Layout)
@@ -161,12 +164,13 @@ with col_sup_der: #-------------------------------------------------------------
             cliponaxis=False, 
             textfont=dict(
                 size=17, 
-                color="white"
+                color="white",
+                weight=300
             )
         ))
         # 3. DISEÑO Y ESTÉTICA (Layout)
         fig2.update_layout(
-            title=dict(text="Reservas Bancarias Excedentarias", font=dict(color="white")), 
+            title=dict(text="Reservas Bancarias Excedentarias", font=dict(color="white"),weight=300), 
             paper_bgcolor='rgba(0,0,0,0)', 
             plot_bgcolor='rgba(0,0,0,0)', 
             height=ALT_SUP, 
@@ -220,7 +224,7 @@ with col_inf_1: #---------------------------------------------------------------
         ))
         # 3. DISEÑO Y ESTÉTICA (Layout)
         fig3.update_layout(
-            title=dict(text="Tasa Overnight Mensual", font=dict(color="white")), 
+            title=dict(text="Tasa Overnight Mensual", font=dict(color="white"),weight=300), 
             paper_bgcolor='rgba(0,0,0,0)', 
             plot_bgcolor='rgba(0,0,0,0)', 
             height=ALT_INF, 
@@ -284,7 +288,7 @@ with col_inf_2: #---------------------------------------------------------------
 
         # 3. LAYOUT: Eje X más grande y ajuste de rango Y para que quepa todo
         fig4.update_layout(
-            title=dict(text="Base Monetaria", font=dict(color="white")), 
+            title=dict(text="Base Monetaria", font=dict(color="white"),weight=300), 
             paper_bgcolor='rgba(0,0,0,0)', 
             plot_bgcolor='rgba(0,0,0,0)', 
             height=ALT_INF, 
@@ -352,7 +356,7 @@ with col_inf_3: #---------------------------------------------------------------
 
         # 5. CONFIGURACIÓN DEL DISEÑO (Mismo alto que G4)
         fig5.update_layout(
-            title=dict(text="Liquidez Monetaria", font=dict(color="white")), 
+            title=dict(text="Liquidez Monetaria", font=dict(color="white"),weight=300), 
             paper_bgcolor='rgba(0,0,0,0)', 
             plot_bgcolor='rgba(0,0,0,0)', 
             height=ALT_INF, # Asegura que el alto sea idéntico al G4
@@ -425,7 +429,7 @@ with col_inf_4: #---------------------------------------------------------------
 
         # 5. CONFIGURACIÓN DEL DISEÑO (Layout consistente)
         fig6.update_layout(
-            title=dict(text="Reservas Internacionales $", font=dict(color="white")), 
+            title=dict(text="Reservas Internacionales $", font=dict(color="white"),weight=300), 
             paper_bgcolor='rgba(0,0,0,0)', 
             plot_bgcolor='rgba(0,0,0,0)', 
             height=ALT_INF, 
