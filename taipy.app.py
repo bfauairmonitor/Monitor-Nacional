@@ -293,7 +293,7 @@ with col_inf_2: #---------------------------------------------------------------
                 gridcolor='#222222',
                 range=[montos4.min()*-0.4, montos4.max()*1.4] # Margen extra arriba y abajo
             ), 
-            font=dict(color=C_AZUL), 
+            font=dict(color='#2F4F4F'), 
             showlegend=False
         )
         
