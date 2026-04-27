@@ -128,7 +128,7 @@ with col_sup_izq: #-------------------------------------------------------------
                 gridcolor='#222222', 
                 tickfont=dict(color="white")
             ), 
-            title=dict(text="Tasa Overnight Diaria", font=dict(color="white", size=16)),
+            font=dict(color="#ffffff")
         )
         # 4. RENDERIZADO EN STREAMLIT
         st.plotly_chart(
