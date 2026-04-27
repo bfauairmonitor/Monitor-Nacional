@@ -229,7 +229,7 @@ with col_inf_1: #---------------------------------------------------------------
             height=ALT_INF, 
             margin=dict(l=5, r=5, t=30, b=30), 
             xaxis=dict(
-                tickfont=dict(color="white", size=15) # Fechas legibles
+                tickfont=dict(color="white", size=17) # Fechas legibles
             ), 
             yaxis=dict(
                 showticklabels=False, 
@@ -281,7 +281,7 @@ with col_inf_2: #---------------------------------------------------------------
             textposition="top center", # Cambiado a top para mejor visibilidad
             line=dict(color=C_NARANJA, width=3, shape='spline'), # Línea curva
             marker=dict(size=8, color='white'), 
-            textfont=dict(color=C_NARANJA, size=15),
+            textfont=dict(color=C_NARANJA, size=17),
             cliponaxis=False # Evita que el texto se corte en los bordes
         ))
 
@@ -332,7 +332,7 @@ with col_inf_3: #---------------------------------------------------------------
             text=[f"{int(v):,}MM" for v in montos5], 
             textposition='outside', 
             marker_color='#483D8B', 
-            textfont=dict(color="white", size=15)
+            textfont=dict(color="white", size=17)
         ))
         
         # 4. TRAZA DE LÍNEA DE VARIACIÓN (Curva Spline)
@@ -423,7 +423,7 @@ with col_inf_4: #---------------------------------------------------------------
                 shape='spline' # Línea con curvatura suave
             ), 
             marker=dict(size=8, color='white'), 
-            textfont=dict(color=C_NARANJA, size=16)
+            textfont=dict(color=C_NARANJA, size=17)
         ))
 
         # 5. CONFIGURACIÓN DEL DISEÑO (Layout consistente)
