@@ -45,9 +45,9 @@ display: flex; justify-content: space-between; align-items: center;
 padding: 15px 5px; background-color: {C_FONDO}; 
 border-bottom: 2px solid #444; height: auto; margin-bottom: 30px;
 }}
-.title-main {{ font-size: 3.5rem; margin: 0; color: {C_TITULO}; }}
+.title-main {{ font-size: 3.1rem; margin: 0; color: {C_TITULO}; }}
 .subtitle-sub {{ font-size: 2.2rem; color: #ffffff; margin: 0; }}
-.update-text {{ font-size: 1.1rem; color: {C_NARANJA}; text-align: right; line-height: 1.1; }}
+.update-text {{ font-size: 1rem; color: {C_NARANJA}; text-align: right; line-height: 1.1; }}
 [data-testid="stVerticalBlock"] {{ gap: 0rem !important; }}
 .st-emotion-cache-18kf3ut{{
 margin-top:20px;}}
