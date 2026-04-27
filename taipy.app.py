@@ -59,6 +59,7 @@ def get_base64(bin_file):
     except: return ""
 st_autorefresh(interval=REFRESH_INT, key="datarefresh")
 # Preparación de Encabezado
+# CORRECCIÓN DE HORA: Formato 12h estándar
 ahora = datetime.now().strftime("%d/%m/%Y %I:%M %p")
 logo_path = Path("assets/logo.png")
 logo_b64 = get_base64(logo_path)
@@ -115,7 +116,7 @@ with col_sup_izq: #-------------------------------------------------------------
         ))
         # 3. DISEÑO Y ESTÉTICA (Layout)
         fig1.update_layout(
-            title="Tasa Overnight Diaria", 
+            title=dict(text="Tasa Overnight Diaria", font=dict(color="white")), 
             paper_bgcolor='rgba(0,0,0,0)', 
             plot_bgcolor='rgba(0,0,0,0)', 
             height=ALT_SUP, 
@@ -164,7 +165,7 @@ with col_sup_der: #-------------------------------------------------------------
         ))
         # 3. DISEÑO Y ESTÉTICA (Layout)
         fig2.update_layout(
-            title="Reservas Bancarias Excedentarias", 
+            title=dict(text="Reservas Bancarias Excedentarias", font=dict(color="white")), 
             paper_bgcolor='rgba(0,0,0,0)', 
             plot_bgcolor='rgba(0,0,0,0)', 
             height=ALT_SUP, 
@@ -218,7 +219,7 @@ with col_inf_1: #---------------------------------------------------------------
         ))
         # 3. DISEÑO Y ESTÉTICA (Layout)
         fig3.update_layout(
-            title="Tasa Overnight Mensual", 
+            title=dict(text="Tasa Overnight Mensual", font=dict(color="white")), 
             paper_bgcolor='rgba(0,0,0,0)', 
             plot_bgcolor='rgba(0,0,0,0)', 
             height=ALT_INF, 
@@ -282,7 +283,7 @@ with col_inf_2: #---------------------------------------------------------------
 
         # 3. LAYOUT: Eje X más grande y ajuste de rango Y para que quepa todo
         fig4.update_layout(
-            title="Base Monetaria", 
+            title=dict(text="Base Monetaria", font=dict(color="white")), 
             paper_bgcolor='rgba(0,0,0,0)', 
             plot_bgcolor='rgba(0,0,0,0)', 
             height=ALT_INF, 
@@ -350,7 +351,7 @@ with col_inf_3: #---------------------------------------------------------------
 
         # 5. CONFIGURACIÓN DEL DISEÑO (Mismo alto que G4)
         fig5.update_layout(
-            title="Liquidez Monetaria", 
+            title=dict(text="Liquidez Monetaria", font=dict(color="white")), 
             paper_bgcolor='rgba(0,0,0,0)', 
             plot_bgcolor='rgba(0,0,0,0)', 
             height=ALT_INF, # Asegura que el alto sea idéntico al G4
@@ -423,7 +424,7 @@ with col_inf_4: #---------------------------------------------------------------
 
         # 5. CONFIGURACIÓN DEL DISEÑO (Layout consistente)
         fig6.update_layout(
-            title="Reservas Internacionales $", 
+            title=dict(text="Reservas Internacionales $", font=dict(color="white")), 
             paper_bgcolor='rgba(0,0,0,0)', 
             plot_bgcolor='rgba(0,0,0,0)', 
             height=ALT_INF, 
@@ -447,4 +448,4 @@ with col_inf_4: #---------------------------------------------------------------
         )
 
     except Exception as e: 
-        st.error(f"Error G6: {e}") 
+        st.error(f"Error G6: {e}")
