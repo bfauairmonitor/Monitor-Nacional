@@ -262,7 +262,7 @@ with col_inf_2: #---------------------------------------------------------------
             y=montos4, 
             text=[f"{v:,.1f}MM" for v in montos4], 
             textposition='outside', 
-            marker_color='#4D79FF', 
+            marker_color='#2F4F4F', 
             textfont=dict(color="white", size=15) 
         ))
 
@@ -293,7 +293,7 @@ with col_inf_2: #---------------------------------------------------------------
                 gridcolor='#222222',
                 range=[montos4.min()*-0.4, montos4.max()*1.4] # Margen extra arriba y abajo
             ), 
-            font=dict(color='#2F4F4F'), 
+            font=dict(color=C_AZUL), 
             showlegend=False
         )
         
