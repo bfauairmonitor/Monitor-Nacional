@@ -1,248 +1,118 @@
- import streamlit as st
-
+import streamlit as st
 import pandas as pd
-
 import plotly.graph_objects as go
-
 from streamlit_autorefresh import st_autorefresh
-
 import base64
-
 from pathlib import Path
-
 from datetime import datetime
-
-
-# ==========================================
-
+# =========================================
 # 1. VARIABLES GLOBALES (CASCADA DE EDICIÓN)
-
 # ==========================================
-
 REFRESH_INT = 600000 
-
 C_FONDO = "#0E1117"
-
 C_AZUL = "#2b5dda"
-
 C_NARANJA = "#F4A460"
-
 C_BLANCO = "#FFFFFF"
-
 ALT_SUP = 320
-
 ALT_INF = 350
-
-
 # ==========================================
-
 # 2. CONFIGURACIÓN DE PÁGINA
-
 # ==========================================
-
 st.set_page_config(
-
     page_title="Dashboard Administrativo de Riesgo",
-
     layout="wide",
-
     initial_sidebar_state="collapsed"
-
 )
-
-
 # ==========================================
-
 # 3. ESTILOS CSS (SIN INDENTACIÓN PARA EVITAR ERRORES)
-
 # ==========================================
-
 # NOTA: No tabular ni dar espacios al inicio de las líneas de este bloque
-
 st.markdown(f"""
-
 <style>
-
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700;900&display=swap');
-
 [data-testid="stHeader"], header {{ display: none !important; height: 0px !important; }}
-
 .stApp {{ margin-top: -90px !important; background-color: {C_FONDO} !important; }}
-
 .main .block-container {{ padding: 0px 1rem !important; max-width: 100%; }}
-
 html, body, .main {{ 
-
 font-family: 'Roboto', sans-serif; 
-
 overflow: hidden; 
-
 background-color: {C_FONDO} !important;
-
 color: white;
-
 }}
-
 .header-container {{
-
 display: flex; justify-content: space-between; align-items: center;
-
 padding: 15px 5px; background-color: {C_FONDO}; 
-
 border-bottom: 2px solid #444; height: 8vh; margin-bottom: 30px;
-
 }}
-
 .title-main {{ font-size: 2rem; font-weight: bold; margin: 0; color: {C_AZUL}; }}
-
 .subtitle-sub {{ font-size: 1.2rem; color: #ffffff; margin: 0; }}
-
 .update-text {{ font-size: 1rem; color: {C_NARANJA}; text-align: right; line-height: 1.1; }}
-
 [data-testid="stVerticalBlock"] {{ gap: 0rem !important; }}
-
 </style>
-
 """, unsafe_allow_html=True)
-
-
 # ==========================================
-
 # 4. FUNCIONES Y LÓGICA DE DATOS
-
 # ==========================================
-
 def get_base64(bin_file):
-
     try:
-
         with open(bin_file, 'rb') as f: return base64.b64encode(f.read()).decode()
-
     except: return ""
-
-
 st_autorefresh(interval=REFRESH_INT, key="datarefresh")
-
-
 # Preparación de Encabezado
-
 ahora = datetime.now().strftime("%d/%m/%Y %I:%M %p")
-
 logo_path = Path("assets/logo.png")
-
 logo_b64 = get_base64(logo_path)
-
 logo_html = f'<img src="data:image/png;base64,{logo_b64}" style="height:5vh;">' if logo_b64 else ''
-
-
 # Render de Encabezado (Sin espacios al inicio)
-
 st.markdown(f"""
-
 <div class="header-container">
-
 <div style="display: flex; align-items: center; gap: 20px;">
-
 {logo_html}
-
 <div>
-
 <p class="title-main">Unidad Administrativa Integral de Riesgo</p>
-
 <p class="subtitle-sub">Indicadores Macroeconómicos BCV.</p>
-
 </div>
-
 </div>
-
 <div class="update-text">Última actualización:<br><b>{ahora}</b></div>
-
 </div>
-
 """, unsafe_allow_html=True)
-
-
 # ==========================================
-
 # 5. FILA SUPERIOR
-
-# ==========================================
-
+# =========================================
 col_sup_izq, col_sup_der = st.columns(2)
-
-
 with col_sup_izq: #---------------------------------------------------------------------------TASA OVERNIGHT DIARIA
-
     try:
-
         # 1. CARGA Y PROCESAMIENTO DE DATOS
-
         df1 = pd.read_excel('Datos_Macroeconomicos.xlsx', 
-
                            sheet_name='Tasa Overnight Diaria', 
-
                            usecols="A,H")
-
-        
-
         # Filtramos valores en cero, eliminamos vacíos y tomamos los últimos 7
-
         df1 = df1[df1.iloc[:, 1] != 0].dropna().tail(7)
-
-        
-
         # Formateo de fechas
-
         fechas1 = [d.strftime('%d/%m/%Y') for d in pd.to_datetime(df1.iloc[:, 0])]
-
-        
-
         # 2. CONFIGURACIÓN DE LA TRAZA (Línea y Marcadores)
-
         fig1 = go.Figure(go.Scatter(
-
             x=fechas1, 
-
             y=df1.iloc[:, 1], 
-
             mode='lines+markers+text', 
-
             text=[f"{val}%" for val in df1.iloc[:, 1]], 
-
             textposition="top center", 
-
             cliponaxis=False, 
-
             line=dict(
-
                 color='#60CCC8', 
-
                 width=4, 
-
                 shape='spline'
-
             ), 
-
             marker=dict(
-
                 size=10, 
-
                 color='#FFFFFF', 
-
                 line=dict(width=2, color='#60CCC8')
-
             ), 
-
             textfont=dict(
-
                 size=16, 
-
                 color="white"
-
             )
-
         ))
-
         
 
         # 3. DISEÑO Y ESTÉTICA (Layout)
