@@ -432,7 +432,7 @@ with col_inf_4: #---------------------------------------------------------------
             y=montos6, 
             text=[f"{int(v):,}MM" for v in montos6], 
             textposition='outside', 
-            marker_color='#9E7BFF', 
+            marker_color='#191970', 
             textfont=dict(color="white", size=15)
         ))
 
