@@ -30,49 +30,27 @@ st.set_page_config(
 # ==========================================
 # NOTA: No tabular ni dar espacios al inicio de las líneas de este bloque
 st.markdown(f"""
-st.markdown(f"""
 <style>
-
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700;900&display=swap');
-
 [data-testid="stHeader"], header {{ display: none !important; height: 0px !important; }}
-
 .stApp {{ margin-top: -90px !important; background-color: {C_FONDO} !important; }}
-
 .main .block-container {{ padding: 0px 1rem !important; max-width: 100%; }}
-
 html, body, .main {{ 
-
 font-family: 'Roboto', sans-serif; 
-
 overflow: hidden; 
-
 background-color: {C_FONDO} !important;
-
 color: white;
-
 }}
-
 .header-container {{
-
 display: flex; justify-content: space-between; align-items: center;
-
 padding: 15px 5px; background-color: {C_FONDO}; 
-
 border-bottom: 2px solid #444; height: 8vh; margin-bottom: 30px;
-
 }}
-
 .title-main {{ font-size: 2rem; font-weight: bold; margin: 0; color: {C_AZUL}; }}
-
 .subtitle-sub {{ font-size: 1.2rem; color: #ffffff; margin: 0; }}
-
 .update-text {{ font-size: 1rem; color: {C_NARANJA}; text-align: right; line-height: 1.1; }}
-
 [data-testid="stVerticalBlock"] {{ gap: 0rem !important; }}
-
 </style>
-
 """, unsafe_allow_html=True)
 
 # ==========================================
