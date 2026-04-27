@@ -109,7 +109,7 @@ with col_sup_izq: #-------------------------------------------------------------
                 line=dict(width=2, color='#60CCC8')
             ), 
             textfont=dict(
-                size=16, 
+                size=17, 
                 color="white"
             )
         ))
@@ -158,7 +158,7 @@ with col_sup_der: #-------------------------------------------------------------
             marker_color=C_AZUL, 
             cliponaxis=False, 
             textfont=dict(
-                size=16, 
+                size=17, 
                 color="white"
             )
         ))
@@ -212,7 +212,7 @@ with col_inf_1: #---------------------------------------------------------------
                 shape='spline'  # Esto mantiene la curvatura suave
             ), 
             textfont=dict(
-                size=15, 
+                size=17, 
                 color="white"
             )
         ))
@@ -263,7 +263,7 @@ with col_inf_2: #---------------------------------------------------------------
             text=[f"{v:,.1f}MM" for v in montos4], 
             textposition='outside', 
             marker_color='#2F4F4F', 
-            textfont=dict(color="white", size=15) 
+            textfont=dict(color="white", size=17) 
         ))
 
         # 2. LÍNEA DE VARIACIÓN: Agregué 'spline' para curvatura y subí el texto
@@ -345,7 +345,7 @@ with col_inf_3: #---------------------------------------------------------------
                 shape='spline' # Línea curva suave
             ), 
             marker=dict(size=8, color='white'), 
-            textfont=dict(color=C_NARANJA, size=15)
+            textfont=dict(color=C_NARANJA, size=17)
         ))
 
         # 5. CONFIGURACIÓN DEL DISEÑO (Mismo alto que G4)
@@ -400,7 +400,7 @@ with col_inf_4: #---------------------------------------------------------------
             text=[f"{int(v):,}MM" for v in montos6], 
             textposition='outside', 
             marker_color='#191970', 
-            textfont=dict(color="white", size=15)
+            textfont=dict(color="white", size=17)
         ))
 
         # 4. TRAZA DE LÍNEA (Variación % Curva)
