@@ -73,7 +73,6 @@ border-bottom: 2px solid #444; height: 8vh; margin-bottom: 30px;
 
 </style>
 
-""", unsafe_allow_html=True) 
 """, unsafe_allow_html=True)
 
 # ==========================================
