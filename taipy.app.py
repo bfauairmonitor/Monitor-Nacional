@@ -5,6 +5,8 @@ from streamlit_autorefresh import st_autorefresh
 import base64
 from pathlib import Path
 from datetime import datetime
+import pytz # Librería necesaria para la zona horaria
+
 # =========================================
 # 1. VARIABLES GLOBALES (CASCADA DE EDICIÓN)
 # ==========================================
@@ -59,13 +61,14 @@ def get_base64(bin_file):
     except: return ""
 st_autorefresh(interval=REFRESH_INT, key="datarefresh")
 # Preparación de Encabezado
-# CORRECCIÓN DE HORA: Formato 12h (AM/PM)
-ahora = datetime.now().strftime("%d/%m/%Y %I:%M %p")
+# CORRECCIÓN DE HORA: Zona Horaria Caracas y Formato 12h
+zona_horaria = pytz.timezone('America/Caracas')
+ahora = datetime.now(zona_horaria).strftime("%d/%m/%Y %I:%M %p")
 logo_path = Path("assets/logo.png")
 logo_b64 = get_base64(logo_path)
 
-# CORRECCIÓN LOGO: Ajuste de altura fija y margen para asegurar renderizado
-logo_html = f'<img src="data:image/png;base64,{logo_b64}" style="height:60px; margin-right:20px;">' if logo_b64 else ''
+# CORRECCIÓN LOGO: Se añade display:block y se valida la existencia del base64
+logo_html = f'<img src="data:image/png;base64,{logo_b64}" style="height:60px; margin-right:20px; display:block;">' if logo_b64 else ''
 
 # Render de Encabezado (Sin espacios al inicio)
 st.markdown(f"""
@@ -249,7 +252,7 @@ with col_inf_2: #---------------------------------------------------------------
     try:
         df4 = pd.read_excel('Datos_Macroeconomicos.xlsx', sheet_name='Base Monetaria', usecols="A,B,C")
         df4['Fecha_DT'] = pd.to_datetime(df4.iloc[:, 0])
-        hoy = datetime.now()
+        hoy = datetime.now(zona_horaria)
         df_f4 = df4[(df4['Fecha_DT'].dt.month == hoy.month) & (df4['Fecha_DT'].dt.year == hoy.year)]
         if df_f4.empty:
             m, a = (hoy.month-1, hoy.year) if hoy.month > 1 else (12, hoy.year-1)
@@ -301,7 +304,7 @@ with col_inf_3: #---------------------------------------------------------------
     try:
         df5 = pd.read_excel('Datos_Macroeconomicos.xlsx', sheet_name='Liquidez Monetaria', usecols="A,G,H")
         df5['Fecha_DT'] = pd.to_datetime(df5.iloc[:, 0])
-        hoy = datetime.now()
+        hoy = datetime.now(zona_horaria)
         df_f5 = df5[(df5['Fecha_DT'].dt.month == hoy.month) & (df5['Fecha_DT'].dt.year == hoy.year)]
         if df_f5.empty:
             m, a = (hoy.month-1, hoy.year) if hoy.month > 1 else (12, hoy.year-1)
@@ -353,7 +356,7 @@ with col_inf_4: #---------------------------------------------------------------
     try:
         df6 = pd.read_excel('Datos_Macroeconomicos.xlsx', sheet_name='Resev. Internacionales $', usecols="A,D,E")
         df6['Fecha_DT'] = pd.to_datetime(df6.iloc[:, 0])
-        hoy = datetime.now()
+        hoy = datetime.now(zona_horaria)
         df_f6 = df6[(df6['Fecha_DT'].dt.month == hoy.month) & (df6['Fecha_DT'].dt.year == hoy.year)]
         if df_f6.empty:
             m, a = (hoy.month-1, hoy.year) if hoy.month > 1 else (12, hoy.year-1)
