@@ -30,74 +30,75 @@ st.set_page_config(
 # ==========================================
 # NOTA: No tabular ni dar espacios al inicio de las líneas de este bloque
 st.markdown(f"""
+st.markdown(f"""
 <style>
-/* 1. Importación de Fuentes */
+/* 1. Importación de fuente externa */
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700;900&display=swap');
 
-/* 2. Ocultar el encabezado por defecto de Streamlit */
+/* 2. Ocultar elementos nativos de Streamlit */
 [data-testid="stHeader"], 
-header {
-    display: none !important;
-    height: 0px !important;
-}
+header {{ 
+    display: none !important; 
+    height: 0px !important; 
+}}
 
-/* 3. Ajustes del contenedor principal de la App */
-.stApp {
-    margin-top: -90px;
-    background-color: {C_FONDO};
-}
+/* 3. Ajuste de la aplicación y fondo */
+.stApp {{ 
+    margin-top: -90px !important; 
+    background-color: {C_FONDO} !important; 
+}}
 
-/* 4. Configuración del contenedor de bloques (márgenes y ancho) */
-.main .block-container {
-    padding: 0px 1rem !important;
-    max-width: 100%;
-}
+/* 4. Contenedor principal de bloques */
+.main .block-container {{ 
+    padding: 0px 1rem !important; 
+    max-width: 100%; 
+}}
 
-/* 5. Estilos globales (Cuerpo y Fuente) */
-html, body, .main { 
+/* 5. Estilos globales de cuerpo y tipografía */
+html, body, .main {{ 
     font-family: 'Roboto', sans-serif; 
     overflow: hidden; 
     background-color: {C_FONDO} !important;
     color: white;
-}
+}}
 
-/* 6. Contenedor de encabezado personalizado (Navbar) */
-.header-container {
-    display: flex;
-    justify-content: space-between;
+/* 6. Barra de navegación / Encabezado personalizado */
+.header-container {{
+    display: flex; 
+    justify-content: space-between; 
     align-items: center;
-    padding: 15px 5px;
+    padding: 15px 5px; 
     background-color: {C_FONDO}; 
-    border-bottom: 2px solid #444;
-    height: 8vh;
+    border-bottom: 2px solid #444; 
+    height: 8vh; 
     margin-bottom: 30px;
-}
+}}
 
-/* 7. Estilos de texto específicos */
-.title-main {
-    font-size: 2rem;
-    font-weight: bold;
-    margin: 0;
-    color: {C_AZUL};
-}
+/* 7. Estilos de los textos del encabezado */
+.title-main {{ 
+    font-size: 2rem; 
+    font-weight: bold; 
+    margin: 0; 
+    color: {C_AZUL}; 
+}}
 
-.subtitle-sub {
-    font-size: 1.2rem;
-    color: #ffffff;
-    margin: 0;
-}
+.subtitle-sub {{ 
+    font-size: 1.2rem; 
+    color: #ffffff; 
+    margin: 0; 
+}}
 
-.update-text {
-    font-size: 1rem;
-    color: {C_NARANJA};
-    text-align: right;
-    line-height: 1.1;
-}
+.update-text {{ 
+    font-size: 1rem; 
+    color: {C_NARANJA}; 
+    text-align: right; 
+    line-height: 1.1; 
+}}
 
-/* 8. Ajuste de espacio entre bloques verticales */
-[data-testid="stVerticalBlock"] {
-    gap: 0rem !important;
-}
+/* 8. Eliminar espacios innecesarios entre widgets */
+[data-testid="stVerticalBlock"] {{ 
+    gap: 0rem !important; 
+}}
 </style>
 """, unsafe_allow_html=True)
 
