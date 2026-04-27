@@ -354,7 +354,7 @@ with col_inf_3: #---------------------------------------------------------------
             y=montos5, 
             text=[f"{int(v):,}MM" for v in montos5], 
             textposition='outside', 
-            marker_color='#60CCC8', 
+            marker_color='#483D8B', 
             textfont=dict(color="white", size=15)
         ))
 
