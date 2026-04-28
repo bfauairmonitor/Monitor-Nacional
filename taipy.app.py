@@ -150,8 +150,8 @@ with col_sup_der: #-------------------------------------------------------------
         df2 = pd.read_excel('Datos_Macroeconomicos.xlsx', 
                            sheet_name='Reservas Bancarias Excedentari', 
                            usecols="A,B")
-        # Limpieza, toma de los primeros 7 y reversión de orden
-        df2 = df2.dropna().head(7).iloc[::-1]
+        # Limpieza, toma de los ÚLTIMOS 7 (para ver cambios recientes) y reversión de orden si es necesario
+        df2 = df2.dropna().tail(7)
         # Formateo de fechas
         fechas2 = [d.strftime('%d/%m/%Y') for d in pd.to_datetime(df2.iloc[:, 0])]
         # 2. CONFIGURACIÓN DEL GRÁFICO (Barras)
