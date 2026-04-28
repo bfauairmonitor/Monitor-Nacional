@@ -223,7 +223,7 @@ with col_inf_1: #---------------------------------------------------------------
         ))
         # 3. DISEÑO Y ESTÉTICA (Layout)
         fig3.update_layout(
-            title=dict(text="Tasa Overnight Mensual", font=dict(color="white")), 
+            title=dict(text="Tasa Overnight (Prom. Variación Mensual)", font=dict(color="white")), 
             paper_bgcolor='rgba(0,0,0,0)', 
             plot_bgcolor='rgba(0,0,0,0)', 
             height=ALT_INF, 
