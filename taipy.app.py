@@ -69,7 +69,7 @@ def get_base64(bin_file):
     except: return ""
 
 # OPTIMIZACIÓN: Carga centralizada con caché para leer el Excel solo una vez
-@st.cache_data(ttl=600)
+@st.cache_data(ttl=600, show_spinner=False)
 def cargar_datos_excel(ruta):
     # engine='openpyxl' es más rápido para archivos .xlsx grandes
     return pd.read_excel(ruta, sheet_name=None, engine='openpyxl')
@@ -82,13 +82,24 @@ logo_path = Path("assets/logo.png")
 logo_b64 = get_base64(logo_path)
 logo_html = f'<img src="data:image/png;base64,{logo_b64}" style="height:5vh;">' if logo_b64 else ''
 
-# Carga masiva de todas las hojas
-# Carga masiva de todas las hojas con mensaje personalizado
+# Carga masiva con mensaje personalizado y COLOR
 try:
-    with st.spinner("Actualizando, por favor espere..."):
-        dict_hojas = cargar_datos_excel('Datos_Macroeconomicos.xlsx')
+    placeholder = st.empty()
+    with placeholder.container():
+        # Usamos HTML dentro del spinner para darle color y estilo
+        with st.spinner(""):
+            # Aquí definimos el color (C_NARANJA o C_TITULO) y el tamaño
+            st.markdown(f"""
+                <div style="text-align: center; margin-bottom: 10px;">
+                    <p style="color: {C_NARANJA}; font-size: 1.2rem; font-weight: 500;">
+                        Estamos actualizando, por favor espere...
+                    </p>
+                </div>
+            """, unsafe_allow_html=True)
+            dict_hojas = cargar_datos_excel('Datos_Macroeconomicos.xlsx')
+    placeholder.empty()
 except Exception as e:
-    st.error(f"Error crítico al cargar Excel: {e}")
+    st.error(f"Error al cargar Excel: {e}")
     dict_hojas = {}
 
 # Render de Encabezado (Sin espacios al inicio)
