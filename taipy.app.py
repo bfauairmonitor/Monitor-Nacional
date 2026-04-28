@@ -91,8 +91,8 @@ with col_sup_izq: #-------------------------------------------------------------
         df1 = pd.read_excel('Datos_Macroeconomicos.xlsx', 
                            sheet_name='Tasa Overnight Diaria', 
                            usecols="A,H")
-        # Filtramos valores en cero, eliminamos vacíos y tomamos los últimos 7
-        df1 = df1[df1.iloc[:, 1] != 0].dropna().tail(7)
+        # Eliminamos vacíos y tomamos los últimos 7 (ya no filtramos valores en cero)
+        df1 = df1.dropna().tail(7)
         # Formateo de fechas
         fechas1 = [d.strftime('%d/%m/%Y') for d in pd.to_datetime(df1.iloc[:, 0])]
         # 2. CONFIGURACIÓN DE LA TRAZA (Línea y Marcadores)
