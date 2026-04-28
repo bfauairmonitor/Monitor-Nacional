@@ -5,10 +5,11 @@ from streamlit_autorefresh import st_autorefresh
 import base64
 from pathlib import Path
 from datetime import datetime, timedelta
+
 # =========================================
 # 1. VARIABLES GLOBALES (CASCADA DE EDICIÓN)
 # ==========================================
-REFRESH_INT = 60000
+REFRESH_INT = 600000
 C_FONDO = "#0E1117"
 C_AZUL = "#2b5dda"
 C_TITULO = "#87CEEB"
@@ -16,6 +17,7 @@ C_NARANJA = "#FFDEAD"
 C_BLANCO = "#FFFFFF"
 ALT_SUP = 320
 ALT_INF = 350
+
 # ==========================================
 # 2. CONFIGURACIÓN DE PÁGINA
 # ==========================================
@@ -24,10 +26,10 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="collapsed"
 )
+
 # ==========================================
 # 3. ESTILOS CSS (SIN INDENTACIÓN PARA EVITAR ERRORES)
 # ==========================================
-# NOTA: No tabular ni dar espacios al inicio de las líneas de este bloque
 st.markdown(f"""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700;900&display=swap');
@@ -55,19 +57,40 @@ margin-top:20px;}}
 margin-top:10px;}}
 </style>
 """, unsafe_allow_html=True)
+
 # ==========================================
 # 4. FUNCIONES Y LÓGICA DE DATOS
 # ==========================================
+
+@st.cache_data
 def get_base64(bin_file):
     try:
         with open(bin_file, 'rb') as f: return base64.b64encode(f.read()).decode()
     except: return ""
+
+# OPTIMIZACIÓN: Carga centralizada con caché para leer el Excel solo una vez
+@st.cache_data(ttl=600)
+def cargar_datos_excel(ruta):
+    # engine='openpyxl' es más rápido para archivos .xlsx grandes
+    return pd.read_excel(ruta, sheet_name=None, engine='openpyxl')
+
 st_autorefresh(interval=REFRESH_INT, key="datarefresh")
+
 # Preparación de Encabezado (Ajustado a Caracas UTC-4)
 ahora = (datetime.utcnow() - timedelta(hours=4)).strftime("%d/%m/%Y %I:%M %p")
 logo_path = Path("assets/logo.png")
 logo_b64 = get_base64(logo_path)
 logo_html = f'<img src="data:image/png;base64,{logo_b64}" style="height:5vh;">' if logo_b64 else ''
+
+# Carga masiva de todas las hojas
+# Carga masiva de todas las hojas con mensaje personalizado
+try:
+    with st.spinner("Actualizando, por favor espere..."):
+        dict_hojas = cargar_datos_excel('Datos_Macroeconomicos.xlsx')
+except Exception as e:
+    st.error(f"Error crítico al cargar Excel: {e}")
+    dict_hojas = {}
+
 # Render de Encabezado (Sin espacios al inicio)
 st.markdown(f"""
 <div class="header-container">
@@ -81,17 +104,17 @@ st.markdown(f"""
 <div class="update-text">Última actualización:<br><b>{ahora}</b></div>
 </div>
 """, unsafe_allow_html=True)
+
 # ==========================================
 # 5. FILA SUPERIOR
 # =========================================
 col_sup_izq, col_sup_der = st.columns(2)
+
 with col_sup_izq: #---------------------------------------------------------------------------TASA OVERNIGHT DIARIA
     try:
-        # 1. CARGA Y PROCESAMIENTO DE DATOS
-        df1 = pd.read_excel('Datos_Macroeconomicos.xlsx', 
-                           sheet_name='Tasa Overnight Diaria', 
-                           usecols="A,H")
-        # Eliminamos vacíos y tomamos los últimos 7 (ya no filtramos valores en cero)
+        # 1. CARGA Y PROCESAMIENTO DE DATOS (Optimizado usando el diccionario en memoria)
+        df1 = dict_hojas['Tasa Overnight Diaria'].iloc[:, [0, 7]] 
+        # Eliminamos vacíos y tomamos los últimos 7
         df1 = df1.dropna().tail(7)
         # Formateo de fechas
         fechas1 = [d.strftime('%d/%m/%Y') for d in pd.to_datetime(df1.iloc[:, 0])]
@@ -103,20 +126,9 @@ with col_sup_izq: #-------------------------------------------------------------
             text=[f"{val}%" for val in df1.iloc[:, 1]], 
             textposition="top center", 
             cliponaxis=False, 
-            line=dict(
-                color='#60CCC8', 
-                width=4, 
-                shape='spline'
-            ), 
-            marker=dict(
-                size=10, 
-                color='#FFFFFF', 
-                line=dict(width=2, color='#60CCC8')
-            ), 
-            textfont=dict(
-                size=17, 
-                color="white",
-            )
+            line=dict(color='#60CCC8', width=4, shape='spline'), 
+            marker=dict(size=10, color='#FFFFFF', line=dict(width=2, color='#60CCC8')), 
+            textfont=dict(size=17, color="white")
         ))
         # 3. DISEÑO Y ESTÉTICA (Layout)
         fig1.update_layout(
@@ -125,33 +137,22 @@ with col_sup_izq: #-------------------------------------------------------------
             plot_bgcolor='rgba(0,0,0,0)', 
             height=ALT_SUP, 
             margin=dict(l=10, r=10, t=30, b=40), 
-            xaxis=dict(
-                tickangle=-30, 
-                tickfont=dict(color="white", size=15)
-            ), 
-            yaxis=dict(
-                gridcolor='#222222', 
-                tickfont=dict(color="white")
-            ), 
+            xaxis=dict(tickangle=-30, tickfont=dict(color="white", size=15)), 
+            yaxis=dict(gridcolor='#222222', tickfont=dict(color="white")), 
             font=dict(color="#ffffff")
         )
         # 4. RENDERIZADO EN STREAMLIT
-        st.plotly_chart(
-            fig1, 
-            use_container_width=True, 
-            config={'displayModeBar': False}
-        )
-    except Exception as e: 
-        st.error(f"Error G1: {e}")
+        st.plotly_chart(fig1, use_container_width=True, config={'displayModeBar': False})
+    except Exception as e: st.error(f"Error G1: {e}")
         
 with col_sup_der: #------------------------------------------------------------------------- RESERVAS EXCEDENTARIAS
     try:
         # 1. CARGA Y PROCESAMIENTO DE DATOS
-        df2 = pd.read_excel('Datos_Macroeconomicos.xlsx', 
-                           sheet_name='Reservas Bancarias Excedentari', 
-                           usecols="A,B")
-        # Limpieza, toma de los ÚLTIMOS 7 (para ver cambios recientes) y reversión de orden si es necesario
-        df2 = df2.dropna().tail(7)
+        df2 = dict_hojas['Reservas Bancarias Excedentari'].iloc[:, [0, 1]]
+        # Seleccionamos los primeros 7 registros (filas 2 a 8 del Excel)
+        df2 = df2.dropna().head(7)
+        # INVERSIÓN DE ORDEN: Asegura que el gráfico vaya de más antiguo a más reciente
+        df2 = df2.iloc[::-1]
         # Formateo de fechas
         fechas2 = [d.strftime('%d/%m/%Y') for d in pd.to_datetime(df2.iloc[:, 0])]
         # 2. CONFIGURACIÓN DEL GRÁFICO (Barras)
@@ -162,36 +163,23 @@ with col_sup_der: #-------------------------------------------------------------
             textposition='outside', 
             marker_color=C_AZUL, 
             cliponaxis=False, 
-            textfont=dict(
-                size=17, 
-                color="white"
-            )
+            textfont=dict(size=17, color="white")
         ))
         # 3. DISEÑO Y ESTÉTICA (Layout)
         fig2.update_layout(
-            title=dict(text="Reservas Bancarias Excedentarias", font=dict(color="white")), 
+            title=dict(text="Reservas Bancarias Excedentarias (Bolivares)", font=dict(color="white")), 
             paper_bgcolor='rgba(0,0,0,0)', 
             plot_bgcolor='rgba(0,0,0,0)', 
             height=ALT_SUP, 
             margin=dict(l=10, r=10, t=30, b=40), 
-            xaxis=dict(
-                tickangle=-30, 
-                tickfont=dict(color="white", size=15)
-            ), 
-            yaxis=dict(
-                gridcolor='#222222', 
-                tickfont=dict(color="white")
-            ), 
+            xaxis=dict(tickangle=-30, tickfont=dict(color="white", size=15)), 
+            yaxis=dict(gridcolor='#222222', tickfont=dict(color="white")), 
             font=dict(color=C_BLANCO)
         )
         # 4. RENDERIZADO
-        st.plotly_chart(
-            fig2, 
-            use_container_width=True, 
-            config={'displayModeBar': False}
-        )
-    except Exception as e: 
-        st.error(f"Error G2: {e}")
+        st.plotly_chart(fig2, use_container_width=True, config={'displayModeBar': False})
+    except Exception as e: st.error(f"Error G2: {e}")
+
 # ==========================================
 # 6. FILA INFERIOR
 # ==========================================
@@ -200,9 +188,7 @@ col_inf_1, col_inf_2, col_inf_3, col_inf_4 = st.columns([0.2, 0.2, 0.3, 0.3])
 with col_inf_1: #------------------------------------------------------------------------------------TASA OVERNIGHT MENSUAL
     try:
         # 1. EXTRACCIÓN Y LIMPIEZA DE DATOS
-        df3 = pd.read_excel('Datos_Macroeconomicos.xlsx', 
-                           sheet_name='Tasa Overnight Mensual', 
-                           usecols="A,D").iloc[0:5]
+        df3 = dict_hojas['Tasa Overnight Mensual'].iloc[0:5, [0, 3]]
         # 2. CONFIGURACIÓN DE LA TRAZA (Línea y Puntos)
         fig3 = go.Figure(go.Scatter(
             x=df3.iloc[:, 0], 
@@ -211,44 +197,27 @@ with col_inf_1: #---------------------------------------------------------------
             text=[f"{val}%" for val in df3.iloc[:, 1]], 
             textposition="top center", 
             cliponaxis=False, 
-            line=dict(
-                color=C_NARANJA, 
-                width=3, 
-                shape='spline'  # Esto mantiene la curvatura suave
-            ), 
-            textfont=dict(
-                size=17, 
-                color="white"
-            )
+            line=dict(color=C_NARANJA, width=3, shape='spline'), 
+            textfont=dict(size=17, color="white")
         ))
         # 3. DISEÑO Y ESTÉTICA (Layout)
         fig3.update_layout(
-            title=dict(text="Tasa Overnight (Prom. Variación Mensual)", font=dict(color="white")), 
+            title=dict(text="Tasa Overnight (% Mensual)", font=dict(color="white")), 
             paper_bgcolor='rgba(0,0,0,0)', 
             plot_bgcolor='rgba(0,0,0,0)', 
             height=ALT_INF, 
             margin=dict(l=5, r=5, t=30, b=30), 
-            xaxis=dict(
-                tickfont=dict(color="white", size=17) # Fechas legibles
-            ), 
-            yaxis=dict(
-                showticklabels=False, 
-                gridcolor='#222222'
-            ), 
+            xaxis=dict(tickfont=dict(color="white", size=17)), 
+            yaxis=dict(showticklabels=False, gridcolor='#222222'), 
             font=dict(color='#2F4F4F')
         )
         # 4. RENDERIZADO
-        st.plotly_chart(
-            fig3, 
-            use_container_width=True, 
-            config={'displayModeBar': False}
-        )
-    except Exception as e: 
-        st.error(f"Error G3: {e}")
+        st.plotly_chart(fig3, use_container_width=True, config={'displayModeBar': False})
+    except Exception as e: st.error(f"Error G3: {e}")
 
 with col_inf_2: #------------------------------------------------------------------------------------------BASE MONETARIA
     try:
-        df4 = pd.read_excel('Datos_Macroeconomicos.xlsx', sheet_name='Base Monetaria', usecols="A,B,C")
+        df4 = dict_hojas['Base Monetaria'].iloc[:, [0, 1, 2]]
         df4['Fecha_DT'] = pd.to_datetime(df4.iloc[:, 0])
         hoy = (datetime.utcnow() - timedelta(hours=4))
         # Filtrado de datos
@@ -261,133 +230,86 @@ with col_inf_2: #---------------------------------------------------------------
         montos4, var4 = df_f4.iloc[:, 1] / 1000000, df_f4.iloc[:, 2]
         fig4 = go.Figure()
         
-        # 1. BARRAS: Aumenté el tamaño del texto a 12
+        # 1. BARRAS: Texto 17
         fig4.add_trace(go.Bar(
-            x=fechas4, 
-            y=montos4, 
+            x=fechas4, y=montos4, 
             text=[f"{v:,.1f}MM" for v in montos4], 
-            textposition='outside', 
-            marker_color='#2F4F4F', 
+            textposition='outside', marker_color='#2F4F4F', 
             textfont=dict(color="white", size=17) 
         ))
-
-        # 2. LÍNEA DE VARIACIÓN: Agregué 'spline' para curvatura y subí el texto
+        # 2. LÍNEA DE VARIACIÓN
         escala4 = montos4.max() / (var4.abs().max() if var4.abs().max() != 0 else 1)
         fig4.add_trace(go.Scatter(
-            x=fechas4, 
-            y=var4 * escala4 * 0.7, # Subí un poco la posición para que no choque con la base
+            x=fechas4, y=var4 * escala4 * 0.7, 
             mode='lines+markers+text', 
             text=[f"{v:.2f}%" for v in var4], 
-            textposition="top center", # Cambiado a top para mejor visibilidad
-            line=dict(color=C_NARANJA, width=3, shape='spline'), # Línea curva
+            textposition="top center", 
+            line=dict(color=C_NARANJA, width=3, shape='spline'), 
             marker=dict(size=8, color='white'), 
             textfont=dict(color=C_NARANJA, size=17),
-            cliponaxis=False # Evita que el texto se corte en los bordes
+            cliponaxis=False
         ))
-
-        # 3. LAYOUT: Eje X más grande y ajuste de rango Y para que quepa todo
+        # 3. LAYOUT
         fig4.update_layout(
-            title=dict(text="Base Monetaria", font=dict(color="white")), 
-            paper_bgcolor='rgba(0,0,0,0)', 
-            plot_bgcolor='rgba(0,0,0,0)', 
-            height=ALT_INF, 
-            margin=dict(l=5, r=5, t=30, b=40), 
-            xaxis=dict(tickfont=dict(color="white", size=15)), # Fechas más grandes
-            yaxis=dict(
-                showticklabels=False, 
-                gridcolor='#222222',
-                range=[montos4.min()*-0.4, montos4.max()*1.4] # Margen extra arriba y abajo
-            ), 
-            font=dict(color=C_AZUL), 
-            showlegend=False
+            title=dict(text="Base Monetaria (Bolivares)", font=dict(color="white")), 
+            paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', 
+            height=ALT_INF, margin=dict(l=5, r=5, t=30, b=40), 
+            xaxis=dict(tickfont=dict(color="white", size=15)), 
+            yaxis=dict(showticklabels=False, gridcolor='#222222', range=[montos4.min()*-0.4, montos4.max()*1.4]), 
+            font=dict(color=C_AZUL), showlegend=False
         )
-        
         st.plotly_chart(fig4, use_container_width=True, config={'displayModeBar': False})
-    except Exception as e: 
-        st.error(f"Error G4: {e}") #FIN BASE MONETARIA
+    except Exception as e: st.error(f"Error G4: {e}")
 
 with col_inf_3: #--------------------------------------------------------------------------------------------------LIQUIDEZ MONETARIA
     try:
         # 1. CARGA Y FILTRADO DE DATOS
-        df5 = pd.read_excel('Datos_Macroeconomicos.xlsx', sheet_name='Liquidez Monetaria', usecols="A,G,H")
+        df5 = dict_hojas['Liquidez Monetaria'].iloc[:, [0, 6, 7]]
         df5['Fecha_DT'] = pd.to_datetime(df5.iloc[:, 0])
         hoy = (datetime.utcnow() - timedelta(hours=4))
-        
-        # Lógica de filtrado (Mes actual o anterior)
+        # Lógica de filtrado
         df_f5 = df5[(df5['Fecha_DT'].dt.month == hoy.month) & (df5['Fecha_DT'].dt.year == hoy.year)]
         if df_f5.empty:
             m, a = (hoy.month-1, hoy.year) if hoy.month > 1 else (12, hoy.year-1)
             df_f5 = df5[(df5['Fecha_DT'].dt.month == m) & (df5['Fecha_DT'].dt.year == a)]
-
         df_f5 = df_f5.sort_values('Fecha_DT')
         fechas5 = [d.strftime('%d/%m/%Y') for d in df_f5['Fecha_DT']]
         montos5, var5 = df_f5.iloc[:, 1] / 1000000, df_f5.iloc[:, 2]
-        
-        # 2. INICIALIZACIÓN DEL GRÁFICO
         fig5 = go.Figure()
-        # 3. TRAZA DE BARRAS (Igualado a tamaño 15 como el G4)
+        # 3. TRAZA DE BARRAS
         fig5.add_trace(go.Bar(
-            x=fechas5, 
-            y=montos5, 
+            x=fechas5, y=montos5, 
             text=[f"{int(v):,}MM" for v in montos5], 
-            textposition='outside', 
-            marker_color='#483D8B', 
+            textposition='outside', marker_color='#483D8B', 
             textfont=dict(color="white", size=17)
         ))
-        
-        # 4. TRAZA DE LÍNEA DE VARIACIÓN (Curva Spline)
+        # 4. TRAZA DE LÍNEA DE VARIACIÓN
         escala5 = montos5.max() / (var5.abs().max() if var5.abs().max() != 0 else 1)
         fig5.add_trace(go.Scatter(
-            x=fechas5, 
-            y=var5 * escala5 * 0.7, # Ajustado igual que G4
-            mode='lines+markers+text', 
-            text=[f"{v:.2f}%" for v in var5], 
-            textposition="top center", 
-            cliponaxis=False, 
-            line=dict(
-                color=C_NARANJA, 
-                width=3, 
-                shape='spline' # Línea curva suave
-            ), 
-            marker=dict(size=8, color='white'), 
-            textfont=dict(color=C_NARANJA, size=17)
+            x=fechas5, y=var5 * escala5 * 0.7, 
+            mode='lines+markers+text', text=[f"{v:.2f}%" for v in var5], 
+            textposition="top center", cliponaxis=False, 
+            line=dict(color=C_NARANJA, width=3, shape='spline'), 
+            marker=dict(size=8, color='white'), textfont=dict(color=C_NARANJA, size=17)
         ))
-
-        # 5. CONFIGURACIÓN DEL DISEÑO (Mismo alto que G4)
+        # 5. CONFIGURACIÓN DEL DISEÑO
         fig5.update_layout(
-            title=dict(text="Liquidez Monetaria", font=dict(color="white")), 
-            paper_bgcolor='rgba(0,0,0,0)', 
-            plot_bgcolor='rgba(0,0,0,0)', 
-            height=ALT_INF, # Asegura que el alto sea idéntico al G4
-            margin=dict(l=5, r=10, t=35, b=40), 
-            xaxis=dict(
-                tickfont=dict(color="white", size=15) # Fechas tamaño 15
-            ), 
-            yaxis=dict(
-                showticklabels=False, 
-                gridcolor='#222222',
-                range=[montos5.min()*-0.4, montos5.max()*1.4] # Rango expandido para visibilidad
-            ), 
-            font=dict(color=C_AZUL), 
-            showlegend=False
+            title=dict(text="Liquidez Monetaria (Bolivares)", font=dict(color="white")), 
+            paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', 
+            height=ALT_INF, margin=dict(l=5, r=10, t=35, b=40), 
+            xaxis=dict(tickfont=dict(color="white", size=15)), 
+            yaxis=dict(showticklabels=False, gridcolor='#222222', range=[montos5.min()*-0.4, montos5.max()*1.4]), 
+            font=dict(color=C_AZUL), showlegend=False
         )
-        # 6. RENDERIZADO
-        st.plotly_chart(
-            fig5, 
-            use_container_width=True, 
-            config={'displayModeBar': False}
-        )
-    except Exception as e: 
-        st.error(f"Error G5: {e}") #FIN LIQUIDEZ MONETARIA
+        st.plotly_chart(fig5, use_container_width=True, config={'displayModeBar': False})
+    except Exception as e: st.error(f"Error G5: {e}")
 
 with col_inf_4: #-------------------------------------------------------------------------------------RESERVAS INTERNACIONALES EN DOLARES $
     try:
         # 1. CARGA Y PROCESAMIENTO DE DATOS
-        df6 = pd.read_excel('Datos_Macroeconomicos.xlsx', sheet_name='Resev. Internacionales $', usecols="A,D,E")
+        df6 = dict_hojas['Resev. Internacionales $'].iloc[:, [0, 3, 4]]
         df6['Fecha_DT'] = pd.to_datetime(df6.iloc[:, 0])
         hoy = (datetime.utcnow() - timedelta(hours=4))
-        # Lógica de filtrado de fechas
-
         df_f6 = df6[(df6['Fecha_DT'].dt.month == hoy.month) & (df6['Fecha_DT'].dt.year == hoy.year)]
         if df_f6.empty:
             m, a = (hoy.month-1, hoy.year) if hoy.month > 1 else (12, hoy.year-1)
@@ -395,61 +317,31 @@ with col_inf_4: #---------------------------------------------------------------
         df_f6 = df_f6.sort_values('Fecha_DT')
         fechas6 = [d.strftime('%d/%m/%Y') for d in df_f6['Fecha_DT']]
         montos6, var6 = df_f6.iloc[:, 1], df_f6.iloc[:, 2]
-
-        # 2. INICIALIZACIÓN DEL GRÁFICO
         fig6 = go.Figure()
-        # 3. TRAZA DE BARRAS (Montos en MM)
+        # 3. TRAZA DE BARRAS
         fig6.add_trace(go.Bar(
-            x=fechas6, 
-            y=montos6, 
+            x=fechas6, y=montos6, 
             text=[f"{int(v):,}MM" for v in montos6], 
-            textposition='outside', 
-            marker_color='#191970', 
+            textposition='outside', marker_color='#191970', 
             textfont=dict(color="white", size=17)
         ))
-
-        # 4. TRAZA DE LÍNEA (Variación % Curva)
+        # 4. TRAZA DE LÍNEA
         escala6 = montos6.max() / (var6.abs().max() if var6.abs().max() != 0 else 1)
         fig6.add_trace(go.Scatter(
-            x=fechas6, 
-            y=var6 * escala6 * 0.7, 
-            mode='lines+markers+text', 
-            text=[f"{v:.2f}%" for v in var6], 
-            textposition="top center", 
-            cliponaxis=False, 
-            line=dict(
-                color=C_NARANJA, 
-                width=3, 
-                shape='spline' # Línea con curvatura suave
-            ), 
-            marker=dict(size=8, color='white'), 
-            textfont=dict(color=C_NARANJA, size=17)
+            x=fechas6, y=var6 * escala6 * 0.7, 
+            mode='lines+markers+text', text=[f"{v:.2f}%" for v in var6], 
+            textposition="top center", cliponaxis=False, 
+            line=dict(color=C_NARANJA, width=3, shape='spline'), 
+            marker=dict(size=8, color='white'), textfont=dict(color=C_NARANJA, size=17)
         ))
-
-        # 5. CONFIGURACIÓN DEL DISEÑO (Layout consistente)
+        # 5. CONFIGURACIÓN DEL DISEÑO
         fig6.update_layout(
-            title=dict(text="Reservas Internacionales $", font=dict(color="white")), 
-            paper_bgcolor='rgba(0,0,0,0)', 
-            plot_bgcolor='rgba(0,0,0,0)', 
-            height=ALT_INF, 
-            margin=dict(l=5, r=10, t=35, b=40), 
-            xaxis=dict(
-                tickfont=dict(color="white", size=16)
-            ), 
-            yaxis=dict(
-                showticklabels=False, 
-                gridcolor='#222222',
-                range=[montos6.min()*-0.4, montos6.max()*1.4]
-            ), 
-            font=dict(color=C_AZUL), 
-            showlegend=False
+            title=dict(text="Reservas Internacionales (Dólares $)", font=dict(color="white")), 
+            paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', 
+            height=ALT_INF, margin=dict(l=5, r=10, t=35, b=40), 
+            xaxis=dict(tickfont=dict(color="white", size=16)), 
+            yaxis=dict(showticklabels=False, gridcolor='#222222', range=[montos6.min()*-0.4, montos6.max()*1.4]), 
+            font=dict(color=C_AZUL), showlegend=False
         )
-        # 6. RENDERIZADO
-        st.plotly_chart(
-            fig6, 
-            use_container_width=True, 
-            config={'displayModeBar': False}
-        )
-
-    except Exception as e: 
-        st.error(f"Error G6: {e}")
+        st.plotly_chart(fig6, use_container_width=True, config={'displayModeBar': False})
+    except Exception as e: st.error(f"Error G6: {e}")
