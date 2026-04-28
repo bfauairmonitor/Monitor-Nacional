@@ -8,7 +8,7 @@ from datetime import datetime, timedelta
 # =========================================
 # 1. VARIABLES GLOBALES (CASCADA DE EDICIÓN)
 # ==========================================
-REFRESH_INT = 86400000
+REFRESH_INT = 60000
 C_FONDO = "#0E1117"
 C_AZUL = "#2b5dda"
 C_TITULO = "#87CEEB"
