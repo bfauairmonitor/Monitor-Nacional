@@ -187,7 +187,7 @@ with col_inf_1:
         fig3.update_layout(
             title=dict(text="TASA OVERNIGHT (% MENSUAL)", font=dict(color="white")), 
             paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', 
-            height=ALT_INF, margin=dict(l=5, r=5, t=45, b=30), 
+            height=ALT_INF, margin=dict(l=25, r=5, t=45, b=30), 
             xaxis=dict(tickfont=dict(color="white", size=18)), 
             yaxis=dict(showticklabels=False, gridcolor='#222222'), font=dict(color='#2F4F4F')
         )
