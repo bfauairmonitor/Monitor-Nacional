@@ -56,11 +56,11 @@ border-bottom: 2px solid #444; height: auto; margin-bottom: 30px;
 
 /* Estilo para los conceptos debajo de los gráficos */
 .concepto-texto {{
-    font-size: 2rem;
+    font-size: 4vw;
     color: {C_NARANJA};
     text-align: center;
     margin-top: -10px;
-    font-weight: 300;
+    font-weight: 500;
     padding:5px 20px;
 }}
 </style>
