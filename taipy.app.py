@@ -229,7 +229,7 @@ with col_inf_3:
         fig5.add_trace(go.Bar(x=fechas5, y=montos5, text=[f"{int(v):,}MM" for v in montos5], textposition='outside', marker_color='#483D8B', textfont=dict(color="white", size=22)))
         escala5 = montos5.max() / (var5.abs().max() if var5.abs().max() != 0 else 1)
         fig5.add_trace(go.Scatter(x=fechas5, y=var5 * escala5 * 0.7, mode='lines+markers+text', text=[f"{v:.2f}%" for v in var5], textposition="top center", line=dict(color=C_NARANJA, width=3), textfont=dict(color=C_NARANJA, size=18), cliponaxis=False))
-        fig5.update_layout(title=dict(text="LIQUIDEZ MONETARIA", font=dict(color="white")), paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', height=ALT_INF, margin=dict(l=5, r=10, t=35, b=40), xaxis=dict(tickfont=dict(color="white", size=15)), yaxis=dict(showticklabels=False, range=[montos5.min()*-0.4, montos5.max()*1.4]), showlegend=False)
+        fig5.update_layout(title=dict(text="LIQUIDÉZ MONETARIA", font=dict(color="white")), paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', height=ALT_INF, margin=dict(l=5, r=10, t=35, b=40), xaxis=dict(tickfont=dict(color="white", size=15)), yaxis=dict(showticklabels=False, range=[montos5.min()*-0.4, montos5.max()*1.4]), showlegend=False)
         st.plotly_chart(fig5, use_container_width=True, config={'displayModeBar': False})
         st.markdown('<p class="concepto-texto">CANTIDAD TOTAL DE DINERO EN CIRCULACIÓN (EFECTIVO, CUENTAS CORRIENTES Y DE AHORRO) DISPONIBLES EN UNA ECONOMÍA PARA REALIZAR TRANSACCIONES.</p>', unsafe_allow_html=True)
     except Exception as e: st.error(f"Error G5: {e}")
