@@ -137,7 +137,7 @@ with col_sup_izq:
         fig1.update_layout(
             title=dict(text="TASA OVERNIGHT DIARIA", font=dict(color="white")), 
             paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', 
-            height=ALT_SUP, margin=dict(l=10, r=10, t=45, b=45), 
+            height=ALT_SUP, margin=dict(l=10, r=10, t=40, b=40), 
             xaxis=dict(tickangle=-30, tickfont=dict(color="white", size=18)), 
             yaxis=dict(gridcolor='#222222', tickfont=dict(color="white")), font=dict(color="#ffffff")
         )
