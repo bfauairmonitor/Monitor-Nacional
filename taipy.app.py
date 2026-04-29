@@ -142,7 +142,7 @@ with col_sup_izq:
             yaxis=dict(gridcolor='#222222', tickfont=dict(color="white")), font=dict(color="#ffffff")
         )
         st.plotly_chart(fig1, use_container_width=True, config={'displayModeBar': False})
-        st.markdown('<p class="concepto-texto">INTERÉS APLICADO A PRÉSTAMOS INTERBANCARIOS O DEPÓSITOS A MUY CORTO PLAZO (UN DIA HABIL).</p>', unsafe_allow_html=True)
+        st.markdown('<p class="concepto-texto">TASA PROMEDIO DIARIA APLICADA A PRÉSTAMOS INTERBANCARIOS O DEPÓSITOS A MUY CORTO PLAZO (UN DIA HABIL).</p>', unsafe_allow_html=True)
     except Exception as e: st.error(f"Error G1: {e}")
         
 with col_sup_der: 
