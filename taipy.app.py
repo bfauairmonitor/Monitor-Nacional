@@ -135,7 +135,7 @@ with col_sup_izq:
             textfont=dict(size=22, color="white")
         ))
         fig1.update_layout(
-            title=dict(text="TASA OVERNIGHT DIARIA", font=dict(color="white")), 
+            title=dict(text="TASA OVERNIGHT DIARIA BCV", font=dict(color="white")), 
             paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', 
             height=ALT_SUP, margin=dict(l=10, r=10, t=40, b=40), 
             xaxis=dict(tickangle=-30, tickfont=dict(color="white", size=18)), 
@@ -157,7 +157,7 @@ with col_sup_der:
             textfont=dict(size=22, color="white")
         ))
         fig2.update_layout(
-            title=dict(text="RESERVAS BANCARIAS EXCEDENTARIAS (EN BOLIVARES)", font=dict(color="white")), 
+            title=dict(text="RESERVAS BANCARIAS EXCEDENTARIAS (EN BOLIVARES) BCV", font=dict(color="white")), 
             paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', 
             height=ALT_SUP, margin=dict(l=10, r=10, t=30, b=40), 
             xaxis=dict(tickangle=-30, tickfont=dict(color="white", size=18)), 
@@ -185,7 +185,7 @@ with col_inf_1:
             textfont=dict(size=22, color="white")
         ))
         fig3.update_layout(
-            title=dict(text="TASA OVERNIGHT (% MENSUAL)", font=dict(color="white")), 
+            title=dict(text="TASA OVERNIGHT (% MENSUAL) BCV", font=dict(color="white")), 
             paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', 
             height=ALT_INF, margin=dict(l=25, r=5, t=45, b=30), 
             xaxis=dict(tickfont=dict(color="white", size=18)), 
@@ -248,7 +248,7 @@ with col_inf_4:
         fig6.add_trace(go.Bar(x=fechas6, y=montos6, text=[f"{int(v):,}MM" for v in montos6], textposition='outside', marker_color='#191970', textfont=dict(color="white", size=22)))
         escala6 = montos6.max() / (var6.abs().max() if var6.abs().max() != 0 else 1)
         fig6.add_trace(go.Scatter(x=fechas6, y=var6 * escala6 * 0.7, mode='lines+markers+text', text=[f"{v:.2f}%" for v in var6], textposition="top center", line=dict(color=C_NARANJA, width=3), textfont=dict(color=C_NARANJA, size=19), cliponaxis=False))
-        fig6.update_layout(title=dict(text="RESERVAS INTERNACIONALES ($)", font=dict(color="white")), paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', height=ALT_INF, margin=dict(l=5, r=10, t=35, b=40), xaxis=dict(tickfont=dict(color="white", size=16)), yaxis=dict(showticklabels=False, range=[montos6.min()*-0.4, montos6.max()*1.4]), showlegend=False)
+        fig6.update_layout(title=dict(text="RESERVAS INTERNACIONALES ($) BCV", font=dict(color="white")), paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', height=ALT_INF, margin=dict(l=5, r=10, t=35, b=40), xaxis=dict(tickfont=dict(color="white", size=16)), yaxis=dict(showticklabels=False, range=[montos6.min()*-0.4, montos6.max()*1.4]), showlegend=False)
         st.plotly_chart(fig6, use_container_width=True, config={'displayModeBar': False})
         st.markdown('<p class="concepto-texto">TOTAL EN DIVISAS QUE EL BCV TIENE EN RESGUARDO, YA SEA EN SUS PROPIAS ARCAS O EN CUENTAS DE BANCOS FUERA DE VENEZUELA.', unsafe_allow_html=True)
     except Exception as e: st.error(f"Error G6: {e}")
