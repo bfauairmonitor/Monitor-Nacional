@@ -135,7 +135,7 @@ with col_sup_izq:
             textfont=dict(size=22, color="white")
         ))
         fig1.update_layout(
-            title=dict(text="Tasa Overnight Diaria", font=dict(color="white")), 
+            title=dict(text="TASA OVERNIGHT DIARIA", font=dict(color="white")), 
             paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', 
             height=ALT_SUP, margin=dict(l=10, r=10, t=30, b=40), 
             xaxis=dict(tickangle=-30, tickfont=dict(color="white", size=18)), 
@@ -157,7 +157,7 @@ with col_sup_der:
             textfont=dict(size=22, color="white")
         ))
         fig2.update_layout(
-            title=dict(text="Reservas Bancarias Excedentarias (Bolivares)", font=dict(color="white")), 
+            title=dict(text="RESERVAS BANCARIAS ECEDENTARIAS (EN BOLIVARES)", font=dict(color="white")), 
             paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', 
             height=ALT_SUP, margin=dict(l=10, r=10, t=30, b=40), 
             xaxis=dict(tickangle=-30, tickfont=dict(color="white", size=18)), 
@@ -185,7 +185,7 @@ with col_inf_1:
             textfont=dict(size=22, color="white")
         ))
         fig3.update_layout(
-            title=dict(text="Tasa Overnight (% Mensual)", font=dict(color="white")), 
+            title=dict(text="TASA OVERNIGHT (% MENSUAL)", font=dict(color="white")), 
             paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', 
             height=ALT_INF, margin=dict(l=5, r=5, t=30, b=30), 
             xaxis=dict(tickfont=dict(color="white", size=18)), 
@@ -210,7 +210,7 @@ with col_inf_2:
         fig4.add_trace(go.Bar(x=fechas4, y=montos4, text=[f"{v:,.1f}MM" for v in montos4], textposition='outside', marker_color='#2F4F4F', textfont=dict(color="white", size=22)))
         escala4 = montos4.max() / (var4.abs().max() if var4.abs().max() != 0 else 1)
         fig4.add_trace(go.Scatter(x=fechas4, y=var4 * escala4 * 0.7, mode='lines+markers+text', text=[f"{v:.2f}%" for v in var4], textposition="top center", line=dict(color=C_NARANJA, width=3), textfont=dict(color=C_NARANJA, size=18), cliponaxis=False))
-        fig4.update_layout(title=dict(text="Base Monetaria", font=dict(color="white")), paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', height=ALT_INF, margin=dict(l=5, r=5, t=30, b=40), xaxis=dict(tickfont=dict(color="white", size=15)), yaxis=dict(showticklabels=False, range=[montos4.min()*-0.4, montos4.max()*1.4]), showlegend=False)
+        fig4.update_layout(title=dict(text="BASE MONETARIA", font=dict(color="white")), paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', height=ALT_INF, margin=dict(l=5, r=5, t=30, b=40), xaxis=dict(tickfont=dict(color="white", size=15)), yaxis=dict(showticklabels=False, range=[montos4.min()*-0.4, montos4.max()*1.4]), showlegend=False)
         st.plotly_chart(fig4, use_container_width=True, config={'displayModeBar': False})
         st.markdown('<p class="concepto-texto">Total de dinero de curso legal emitido por el BCV. (efectivo + reservas bancarias).</p>', unsafe_allow_html=True)
     except Exception as e: st.error(f"Error G4: {e}")
@@ -229,7 +229,7 @@ with col_inf_3:
         fig5.add_trace(go.Bar(x=fechas5, y=montos5, text=[f"{int(v):,}MM" for v in montos5], textposition='outside', marker_color='#483D8B', textfont=dict(color="white", size=22)))
         escala5 = montos5.max() / (var5.abs().max() if var5.abs().max() != 0 else 1)
         fig5.add_trace(go.Scatter(x=fechas5, y=var5 * escala5 * 0.7, mode='lines+markers+text', text=[f"{v:.2f}%" for v in var5], textposition="top center", line=dict(color=C_NARANJA, width=3), textfont=dict(color=C_NARANJA, size=18), cliponaxis=False))
-        fig5.update_layout(title=dict(text="Liquidez Monetaria", font=dict(color="white")), paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', height=ALT_INF, margin=dict(l=5, r=10, t=35, b=40), xaxis=dict(tickfont=dict(color="white", size=15)), yaxis=dict(showticklabels=False, range=[montos5.min()*-0.4, montos5.max()*1.4]), showlegend=False)
+        fig5.update_layout(title=dict(text="LIQUIDEZ MONETARIA", font=dict(color="white")), paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', height=ALT_INF, margin=dict(l=5, r=10, t=35, b=40), xaxis=dict(tickfont=dict(color="white", size=15)), yaxis=dict(showticklabels=False, range=[montos5.min()*-0.4, montos5.max()*1.4]), showlegend=False)
         st.plotly_chart(fig5, use_container_width=True, config={'displayModeBar': False})
         st.markdown('<p class="concepto-texto">Es todo el dinero que circula en la economía. Incluye la Base Monetaria más todo el dinero de clientes en cuentas corrientes y de ahorros.</p>', unsafe_allow_html=True)
     except Exception as e: st.error(f"Error G5: {e}")
@@ -248,7 +248,7 @@ with col_inf_4:
         fig6.add_trace(go.Bar(x=fechas6, y=montos6, text=[f"{int(v):,}MM" for v in montos6], textposition='outside', marker_color='#191970', textfont=dict(color="white", size=22)))
         escala6 = montos6.max() / (var6.abs().max() if var6.abs().max() != 0 else 1)
         fig6.add_trace(go.Scatter(x=fechas6, y=var6 * escala6 * 0.7, mode='lines+markers+text', text=[f"{v:.2f}%" for v in var6], textposition="top center", line=dict(color=C_NARANJA, width=3), textfont=dict(color=C_NARANJA, size=19), cliponaxis=False))
-        fig6.update_layout(title=dict(text="Resev. Internacionales", font=dict(color="white")), paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', height=ALT_INF, margin=dict(l=5, r=10, t=35, b=40), xaxis=dict(tickfont=dict(color="white", size=16)), yaxis=dict(showticklabels=False, range=[montos6.min()*-0.4, montos6.max()*1.4]), showlegend=False)
+        fig6.update_layout(title=dict(text="RESERVAS INTERNACIONALES ($)", font=dict(color="white")), paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', height=ALT_INF, margin=dict(l=5, r=10, t=35, b=40), xaxis=dict(tickfont=dict(color="white", size=16)), yaxis=dict(showticklabels=False, range=[montos6.min()*-0.4, montos6.max()*1.4]), showlegend=False)
         st.plotly_chart(fig6, use_container_width=True, config={'displayModeBar': False})
         st.markdown('<p class="concepto-texto">Total en divisas (dólares, euros, entre otros) que el BCV tiene guardado, ya sea en sus propias cajas fuertes o en cuentas de bancos fuera de Venezuela.', unsafe_allow_html=True)
     except Exception as e: st.error(f"Error G6: {e}")
