@@ -15,8 +15,8 @@ C_AZUL = "#2b5dda"
 C_TITULO = "#87CEEB"
 C_NARANJA = "#FFDEAD"
 C_BLANCO = "#FFFFFF"
-ALT_SUP = 170
-ALT_INF = 180
+ALT_SUP = 210
+ALT_INF = 230
 
 # ==========================================
 # 2. CONFIGURACIÓN DE PÁGINA
