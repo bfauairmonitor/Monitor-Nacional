@@ -142,7 +142,7 @@ with col_sup_izq:
             yaxis=dict(gridcolor='#222222', tickfont=dict(color="white")), font=dict(color="#ffffff")
         )
         st.plotly_chart(fig1, use_container_width=True, config={'displayModeBar': False})
-        st.markdown('<p class="concepto-texto">Es el "préstamo de emergencia" entre bancos Se prestan ese dinero solo por una noche.</p>', unsafe_allow_html=True)
+        st.markdown('<p class="concepto-texto">INTERÉS APLICADO A PRÉSTAMOS INTERBANCARIOS O DEPÓSITOS A MUY CORTO PLAZO (UN DIA HABIL).</p>', unsafe_allow_html=True)
     except Exception as e: st.error(f"Error G1: {e}")
         
 with col_sup_der: 
@@ -164,7 +164,7 @@ with col_sup_der:
             yaxis=dict(gridcolor='#222222', tickfont=dict(color="white")), font=dict(color=C_BLANCO)
         )
         st.plotly_chart(fig2, use_container_width=True, config={'displayModeBar': False})
-        st.markdown('<p class="concepto-texto">Dinero extra que poseen los bancos en el BCV por encima de lo que la ley les obliga (encaje legal).</p>', unsafe_allow_html=True)
+        st.markdown('<p class="concepto-texto">CANTIDAD DE DINERO EXTRA QUE POSEEN LOS BANCOS EN EL BCV POR ENCIMA DE LO QUE LA LEY INDICA (ENCAJE LEGAL).</p>', unsafe_allow_html=True)
     except Exception as e: st.error(f"Error G2: {e}")
 
 # LÍNEA DIVISORIA ENTRE FILAS
@@ -192,7 +192,7 @@ with col_inf_1:
             yaxis=dict(showticklabels=False, gridcolor='#222222'), font=dict(color='#2F4F4F')
         )
         st.plotly_chart(fig3, use_container_width=True, config={'displayModeBar': False})
-        st.markdown('<p class="concepto-texto">Valor resultante de promediar las tasas de interés diarias a las que se negociaron los préstamos entre bancos mensualmente.</p>', unsafe_allow_html=True)
+        st.markdown('<p class="concepto-texto">VALOR RESULTANTE DE PROMEDIAR LAS TASAS DE INTERÉS DIARIAS A LAS QUE SE NEGOCIARON LOS PRESTAMOS ENTRE BANCOS EN EL MES.</p>', unsafe_allow_html=True)
     except Exception as e: st.error(f"Error G3: {e}")
 
 with col_inf_2: 
@@ -212,7 +212,7 @@ with col_inf_2:
         fig4.add_trace(go.Scatter(x=fechas4, y=var4 * escala4 * 0.7, mode='lines+markers+text', text=[f"{v:.2f}%" for v in var4], textposition="top center", line=dict(color=C_NARANJA, width=3), textfont=dict(color=C_NARANJA, size=18), cliponaxis=False))
         fig4.update_layout(title=dict(text="BASE MONETARIA", font=dict(color="white")), paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', height=ALT_INF, margin=dict(l=5, r=5, t=30, b=40), xaxis=dict(tickfont=dict(color="white", size=15)), yaxis=dict(showticklabels=False, range=[montos4.min()*-0.4, montos4.max()*1.4]), showlegend=False)
         st.plotly_chart(fig4, use_container_width=True, config={'displayModeBar': False})
-        st.markdown('<p class="concepto-texto">Total de dinero de curso legal emitido por el BCV. (efectivo + reservas bancarias).</p>', unsafe_allow_html=True)
+        st.markdown('<p class="concepto-texto">MONTO TOTAL DE DINERO DE CURSO LEGAL EMITIDO POR BCV (EFECTIVO + RESERVAS BANCARIAS).</p>', unsafe_allow_html=True)
     except Exception as e: st.error(f"Error G4: {e}")
 
 with col_inf_3: 
@@ -231,7 +231,7 @@ with col_inf_3:
         fig5.add_trace(go.Scatter(x=fechas5, y=var5 * escala5 * 0.7, mode='lines+markers+text', text=[f"{v:.2f}%" for v in var5], textposition="top center", line=dict(color=C_NARANJA, width=3), textfont=dict(color=C_NARANJA, size=18), cliponaxis=False))
         fig5.update_layout(title=dict(text="LIQUIDEZ MONETARIA", font=dict(color="white")), paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', height=ALT_INF, margin=dict(l=5, r=10, t=35, b=40), xaxis=dict(tickfont=dict(color="white", size=15)), yaxis=dict(showticklabels=False, range=[montos5.min()*-0.4, montos5.max()*1.4]), showlegend=False)
         st.plotly_chart(fig5, use_container_width=True, config={'displayModeBar': False})
-        st.markdown('<p class="concepto-texto">Es todo el dinero que circula en la economía. Incluye la Base Monetaria más todo el dinero de clientes en cuentas corrientes y de ahorros.</p>', unsafe_allow_html=True)
+        st.markdown('<p class="concepto-texto">CANTIDAD TOTAL DE DINERO EN CIRCULACION (EFECTIVO, CUENTAS CORRIENTES Y DE AHORRO) DISPONIBLES EN UNA ECONOMIA PARA REALIZAR TRANSACCIONES.</p>', unsafe_allow_html=True)
     except Exception as e: st.error(f"Error G5: {e}")
 
 with col_inf_4: 
@@ -250,6 +250,6 @@ with col_inf_4:
         fig6.add_trace(go.Scatter(x=fechas6, y=var6 * escala6 * 0.7, mode='lines+markers+text', text=[f"{v:.2f}%" for v in var6], textposition="top center", line=dict(color=C_NARANJA, width=3), textfont=dict(color=C_NARANJA, size=19), cliponaxis=False))
         fig6.update_layout(title=dict(text="RESERVAS INTERNACIONALES ($)", font=dict(color="white")), paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', height=ALT_INF, margin=dict(l=5, r=10, t=35, b=40), xaxis=dict(tickfont=dict(color="white", size=16)), yaxis=dict(showticklabels=False, range=[montos6.min()*-0.4, montos6.max()*1.4]), showlegend=False)
         st.plotly_chart(fig6, use_container_width=True, config={'displayModeBar': False})
-        st.markdown('<p class="concepto-texto">Total en divisas que el BCV tiene guardado, ya sea en sus propias cajas fuertes o en cuentas de bancos fuera de Venezuela.', unsafe_allow_html=True)
+        st.markdown('<p class="concepto-texto">TOTAL EN DIVISAS QUE EL BCV TIENE EN RESGUARDO, YA SEA EN SUS PROPIAS ARCAS O EN CUENTAS DE BANCOS FUERA DE VENEZUELA.', unsafe_allow_html=True)
     except Exception as e: st.error(f"Error G6: {e}")
 
