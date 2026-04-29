@@ -250,6 +250,6 @@ with col_inf_4:
         fig6.add_trace(go.Scatter(x=fechas6, y=var6 * escala6 * 0.7, mode='lines+markers+text', text=[f"{v:.2f}%" for v in var6], textposition="top center", line=dict(color=C_NARANJA, width=3), textfont=dict(color=C_NARANJA, size=19), cliponaxis=False))
         fig6.update_layout(title=dict(text="RESERVAS INTERNACIONALES ($)", font=dict(color="white")), paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', height=ALT_INF, margin=dict(l=5, r=10, t=35, b=40), xaxis=dict(tickfont=dict(color="white", size=16)), yaxis=dict(showticklabels=False, range=[montos6.min()*-0.4, montos6.max()*1.4]), showlegend=False)
         st.plotly_chart(fig6, use_container_width=True, config={'displayModeBar': False})
-        st.markdown('<p class="concepto-texto">Total en divisas (dólares, euros, entre otros) que el BCV tiene guardado, ya sea en sus propias cajas fuertes o en cuentas de bancos fuera de Venezuela.', unsafe_allow_html=True)
+        st.markdown('<p class="concepto-texto">Total en divisas que el BCV tiene guardado, ya sea en sus propias cajas fuertes o en cuentas de bancos fuera de Venezuela.', unsafe_allow_html=True)
     except Exception as e: st.error(f"Error G6: {e}")
 
