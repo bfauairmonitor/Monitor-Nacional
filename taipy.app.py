@@ -132,13 +132,13 @@ with col_sup_izq:
             text=[f"{val}%" for val in df1.iloc[:, 1]], textposition="top center", 
             cliponaxis=False, line=dict(color='#60CCC8', width=4, shape='spline'), 
             marker=dict(size=10, color='#FFFFFF', line=dict(width=2, color='#60CCC8')), 
-            textfont=dict(size=19, color="white")
+            textfont=dict(size=22, color="white")
         ))
         fig1.update_layout(
             title=dict(text="Tasa Overnight Diaria", font=dict(color="white")), 
             paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', 
             height=ALT_SUP, margin=dict(l=10, r=10, t=30, b=40), 
-            xaxis=dict(tickangle=-30, tickfont=dict(color="white", size=17)), 
+            xaxis=dict(tickangle=-30, tickfont=dict(color="white", size=18)), 
             yaxis=dict(gridcolor='#222222', tickfont=dict(color="white")), font=dict(color="#ffffff")
         )
         st.plotly_chart(fig1, use_container_width=True, config={'displayModeBar': False})
@@ -154,13 +154,13 @@ with col_sup_der:
             x=fechas2, y=df2.iloc[:, 1]/1000, 
             text=[f"{v/1000:,.3f}MM" for v in df2.iloc[:, 1]], 
             textposition='outside', marker_color=C_AZUL, cliponaxis=False, 
-            textfont=dict(size=19, color="white")
+            textfont=dict(size=22, color="white")
         ))
         fig2.update_layout(
             title=dict(text="Reservas Bancarias Excedentarias (Bolivares)", font=dict(color="white")), 
             paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', 
             height=ALT_SUP, margin=dict(l=10, r=10, t=30, b=40), 
-            xaxis=dict(tickangle=-30, tickfont=dict(color="white", size=17)), 
+            xaxis=dict(tickangle=-30, tickfont=dict(color="white", size=18)), 
             yaxis=dict(gridcolor='#222222', tickfont=dict(color="white")), font=dict(color=C_BLANCO)
         )
         st.plotly_chart(fig2, use_container_width=True, config={'displayModeBar': False})
@@ -182,13 +182,13 @@ with col_inf_1:
             x=df3.iloc[:, 0], y=df3.iloc[:, 1], mode='lines+markers+text', 
             text=[f"{val}%" for val in df3.iloc[:, 1]], textposition="top center", 
             cliponaxis=False, line=dict(color=C_NARANJA, width=3, shape='spline'), 
-            textfont=dict(size=19, color="white")
+            textfont=dict(size=22, color="white")
         ))
         fig3.update_layout(
             title=dict(text="Tasa Overnight (% Mensual)", font=dict(color="white")), 
             paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', 
             height=ALT_INF, margin=dict(l=5, r=5, t=30, b=30), 
-            xaxis=dict(tickfont=dict(color="white", size=17)), 
+            xaxis=dict(tickfont=dict(color="white", size=18)), 
             yaxis=dict(showticklabels=False, gridcolor='#222222'), font=dict(color='#2F4F4F')
         )
         st.plotly_chart(fig3, use_container_width=True, config={'displayModeBar': False})
@@ -207,9 +207,9 @@ with col_inf_2:
         df_f4 = df_f4.sort_values('Fecha_DT')
         fechas4, montos4, var4 = [d.strftime('%d/%m/%Y') for d in df_f4['Fecha_DT']], df_f4.iloc[:, 1] / 1000000, df_f4.iloc[:, 2]
         fig4 = go.Figure()
-        fig4.add_trace(go.Bar(x=fechas4, y=montos4, text=[f"{v:,.1f}MM" for v in montos4], textposition='outside', marker_color='#2F4F4F', textfont=dict(color="white", size=19)))
+        fig4.add_trace(go.Bar(x=fechas4, y=montos4, text=[f"{v:,.1f}MM" for v in montos4], textposition='outside', marker_color='#2F4F4F', textfont=dict(color="white", size=22)))
         escala4 = montos4.max() / (var4.abs().max() if var4.abs().max() != 0 else 1)
-        fig4.add_trace(go.Scatter(x=fechas4, y=var4 * escala4 * 0.7, mode='lines+markers+text', text=[f"{v:.2f}%" for v in var4], textposition="top center", line=dict(color=C_NARANJA, width=3), textfont=dict(color=C_NARANJA, size=17), cliponaxis=False))
+        fig4.add_trace(go.Scatter(x=fechas4, y=var4 * escala4 * 0.7, mode='lines+markers+text', text=[f"{v:.2f}%" for v in var4], textposition="top center", line=dict(color=C_NARANJA, width=3), textfont=dict(color=C_NARANJA, size=18), cliponaxis=False))
         fig4.update_layout(title=dict(text="Base Monetaria", font=dict(color="white")), paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', height=ALT_INF, margin=dict(l=5, r=5, t=30, b=40), xaxis=dict(tickfont=dict(color="white", size=15)), yaxis=dict(showticklabels=False, range=[montos4.min()*-0.4, montos4.max()*1.4]), showlegend=False)
         st.plotly_chart(fig4, use_container_width=True, config={'displayModeBar': False})
         st.markdown('<p class="concepto-texto">Total de dinero de curso legal emitido por el BCV. (efectivo + reservas bancarias).</p>', unsafe_allow_html=True)
@@ -226,9 +226,9 @@ with col_inf_3:
         df_f5 = df_f5.sort_values('Fecha_DT')
         fechas5, montos5, var5 = [d.strftime('%d/%m/%Y') for d in df_f5['Fecha_DT']], df_f5.iloc[:, 1] / 1000000, df_f5.iloc[:, 2]
         fig5 = go.Figure()
-        fig5.add_trace(go.Bar(x=fechas5, y=montos5, text=[f"{int(v):,}MM" for v in montos5], textposition='outside', marker_color='#483D8B', textfont=dict(color="white", size=19)))
+        fig5.add_trace(go.Bar(x=fechas5, y=montos5, text=[f"{int(v):,}MM" for v in montos5], textposition='outside', marker_color='#483D8B', textfont=dict(color="white", size=22)))
         escala5 = montos5.max() / (var5.abs().max() if var5.abs().max() != 0 else 1)
-        fig5.add_trace(go.Scatter(x=fechas5, y=var5 * escala5 * 0.7, mode='lines+markers+text', text=[f"{v:.2f}%" for v in var5], textposition="top center", line=dict(color=C_NARANJA, width=3), textfont=dict(color=C_NARANJA, size=17), cliponaxis=False))
+        fig5.add_trace(go.Scatter(x=fechas5, y=var5 * escala5 * 0.7, mode='lines+markers+text', text=[f"{v:.2f}%" for v in var5], textposition="top center", line=dict(color=C_NARANJA, width=3), textfont=dict(color=C_NARANJA, size=18), cliponaxis=False))
         fig5.update_layout(title=dict(text="Liquidez Monetaria", font=dict(color="white")), paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', height=ALT_INF, margin=dict(l=5, r=10, t=35, b=40), xaxis=dict(tickfont=dict(color="white", size=15)), yaxis=dict(showticklabels=False, range=[montos5.min()*-0.4, montos5.max()*1.4]), showlegend=False)
         st.plotly_chart(fig5, use_container_width=True, config={'displayModeBar': False})
         st.markdown('<p class="concepto-texto">Es todo el dinero que circula en la economía. Incluye la Base Monetaria más todo el dinero de clientes en cuentas corrientes y de ahorros.</p>', unsafe_allow_html=True)
@@ -245,7 +245,7 @@ with col_inf_4:
         df_f6 = df_f6.sort_values('Fecha_DT')
         fechas6, montos6, var6 = [d.strftime('%d/%m/%Y') for d in df_f6['Fecha_DT']], df_f6.iloc[:, 1], df_f6.iloc[:, 2]
         fig6 = go.Figure()
-        fig6.add_trace(go.Bar(x=fechas6, y=montos6, text=[f"{int(v):,}MM" for v in montos6], textposition='outside', marker_color='#191970', textfont=dict(color="white", size=17)))
+        fig6.add_trace(go.Bar(x=fechas6, y=montos6, text=[f"{int(v):,}MM" for v in montos6], textposition='outside', marker_color='#191970', textfont=dict(color="white", size=22)))
         escala6 = montos6.max() / (var6.abs().max() if var6.abs().max() != 0 else 1)
         fig6.add_trace(go.Scatter(x=fechas6, y=var6 * escala6 * 0.7, mode='lines+markers+text', text=[f"{v:.2f}%" for v in var6], textposition="top center", line=dict(color=C_NARANJA, width=3), textfont=dict(color=C_NARANJA, size=19), cliponaxis=False))
         fig6.update_layout(title=dict(text="Resev. Internacionales", font=dict(color="white")), paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', height=ALT_INF, margin=dict(l=5, r=10, t=35, b=40), xaxis=dict(tickfont=dict(color="white", size=16)), yaxis=dict(showticklabels=False, range=[montos6.min()*-0.4, montos6.max()*1.4]), showlegend=False)
