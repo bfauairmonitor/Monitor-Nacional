@@ -56,7 +56,7 @@ border-bottom: 2px solid #444; height: auto; margin-bottom: 30px;
 
 /* Estilo para los conceptos debajo de los gráficos */
 .concepto-texto {{
-    font-size: 0.70rem;
+    font-size: 0.90rem;
     color: {C_NARANJA};
     text-align: center;
     margin-top: -10px;
