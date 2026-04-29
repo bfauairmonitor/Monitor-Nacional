@@ -61,6 +61,7 @@ border-bottom: 2px solid #444; height: auto; margin-bottom: 30px;
     text-align: center;
     margin-top: -10px;
     font-weight: 300;
+    padding:5px 20px;
 }}
 </style>
 """, unsafe_allow_html=True)
