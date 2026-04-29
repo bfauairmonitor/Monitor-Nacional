@@ -85,7 +85,7 @@ st_autorefresh(interval=REFRESH_INT, key="datarefresh")
 ahora = (datetime.utcnow() - timedelta(hours=4)).strftime("%d/%m/%Y %I:%M %p")
 logo_path = Path("assets/logo.png")
 logo_b64 = get_base64(logo_path)
-logo_html = f'<img src="data:image/png;base64,{logo_b64}" style="height:5vh;">' if logo_b64 else ''
+logo_html = f'<img src="data:image/png;base64,{logo_b64}" style="height:3vh;">' if logo_b64 else ''
 
 try:
     placeholder = st.empty()
@@ -94,7 +94,7 @@ try:
             st.markdown(f"""
                 <div style="text-align: center; margin-bottom: 10px;">
                     <p style="color: {C_NARANJA}; font-size: 1.2rem; font-weight: 500;">
-                        Estamos actualizando, por favor espere...
+                        ESTAMOS ACTUALIZANDO LOS INDICADORES, POR FAVOR ESPERE...
                     </p>
                 </div>
             """, unsafe_allow_html=True)
