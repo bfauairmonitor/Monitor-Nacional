@@ -1,15 +1,15 @@
 import streamlit as st
 import pandas as pd
 import plotly.graph_objects as go
-from streamlit_autorefresh import st_autorefresh
 import base64
+import time
 from pathlib import Path
 from datetime import datetime, timedelta
 
 # =========================================
 # 1. VARIABLES GLOBALES (CASCADA DE EDICIÓN)
 # ==========================================
-REFRESH_INT = 600000
+REFRESH_INT = 600  # Intervalo en segundos (10 minutos)
 C_FONDO = "#0E1117"
 C_AZUL = "#2b5dda"
 C_TITULO = "#87CEEB"
@@ -26,6 +26,10 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="collapsed"
 )
+
+# Lógica de refresco nativo para evitar errores de componentes en TV
+if "last_refresh" not in st.session_state:
+    st.session_state.last_refresh = time.time()
 
 # ==========================================
 # 3. ESTILOS CSS
@@ -80,7 +84,10 @@ def get_base64(bin_file):
 def cargar_datos_excel(ruta):
     return pd.read_excel(ruta, sheet_name=None, engine='openpyxl')
 
-st_autorefresh(interval=REFRESH_INT, key="datarefresh")
+# Verificación de tiempo para refresco automático nativo
+if time.time() - st.session_state.last_refresh > REFRESH_INT:
+    st.session_state.last_refresh = time.time()
+    st.rerun()
 
 ahora = (datetime.utcnow() - timedelta(hours=4)).strftime("%d/%m/%Y %I:%M %p")
 logo_path = Path("assets/logo.png")
