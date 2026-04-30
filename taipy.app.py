@@ -27,6 +27,9 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
+# Optimizador de refresh para evitar saturación en Smart TV
+st_autorefresh(interval=REFRESH_INT, key="datarefresh")
+
 # ==========================================
 # 3. ESTILOS CSS
 # ==========================================
@@ -80,29 +83,17 @@ def get_base64(bin_file):
 def cargar_datos_excel(ruta):
     return pd.read_excel(ruta, sheet_name=None, engine='openpyxl')
 
-st_autorefresh(interval=REFRESH_INT, key="datarefresh")
+# Lógica de carga optimizada (sin spinners que bloqueen el renderizado del TV)
+try:
+    dict_hojas = cargar_datos_excel('Datos_Macroeconomicos.xlsx')
+except Exception as e:
+    st.error(f"Error al cargar Excel: {e}")
+    dict_hojas = {}
 
 ahora = (datetime.utcnow() - timedelta(hours=4)).strftime("%d/%m/%Y %I:%M %p")
 logo_path = Path("assets/logo.png")
 logo_b64 = get_base64(logo_path)
 logo_html = f'<img src="data:image/png;base64,{logo_b64}" style="height:3vh;">' if logo_b64 else ''
-
-try:
-    placeholder = st.empty()
-    with placeholder.container():
-        with st.spinner(""):
-            st.markdown(f"""
-                <div style="text-align: center; margin-bottom: 10px;">
-                    <p style="color: {C_NARANJA}; font-size: 1.2rem; font-weight: 500;">
-                        ESTAMOS ACTUALIZANDO LOS INDICADORES, POR FAVOR ESPERE...
-                    </p>
-                </div>
-            """, unsafe_allow_html=True)
-            dict_hojas = cargar_datos_excel('Datos_Macroeconomicos.xlsx')
-    placeholder.empty()
-except Exception as e:
-    st.error(f"Error al cargar Excel: {e}")
-    dict_hojas = {}
 
 st.markdown(f"""
 <div class="header-container">
@@ -250,6 +241,5 @@ with col_inf_4:
         fig6.add_trace(go.Scatter(x=fechas6, y=var6 * escala6 * 0.7, mode='lines+markers+text', text=[f"{v:.2f}%" for v in var6], textposition="top center", line=dict(color=C_NARANJA, width=3), textfont=dict(color=C_NARANJA, size=19), cliponaxis=False))
         fig6.update_layout(title=dict(text="RESERVAS INTERNACIONALES ($) BCV", font=dict(color="white")), paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', height=ALT_INF, margin=dict(l=5, r=10, t=35, b=40), xaxis=dict(tickfont=dict(color="white", size=16)), yaxis=dict(showticklabels=False, range=[montos6.min()*-0.4, montos6.max()*1.4]), showlegend=False)
         st.plotly_chart(fig6, use_container_width=True, config={'displayModeBar': False})
-        st.markdown('<p class="concepto-texto">TOTAL EN DIVISAS QUE EL BCV TIENE EN RESGUARDO, YA SEA EN SUS PROPIAS ARCAS O EN CUENTAS DE BANCOS FUERA DE VENEZUELA.', unsafe_allow_html=True)
+        st.markdown('<p class="concepto-texto">TOTAL EN DIVISAS QUE EL BCV TIENE EN RESGUARDO, YA SEA EN SUS PROPIAS ARCAS O EN CUENTAS DE BANCOS FUERA DE VENEZUELA.</p>', unsafe_allow_html=True)
     except Exception as e: st.error(f"Error G6: {e}")
-
