@@ -60,7 +60,7 @@ border-bottom: 2px solid #444; height: auto; margin-bottom: 30px;
 
 /* Estilo para los conceptos debajo de los gráficos */
 .concepto-texto {{
-    font-size: 8vw;
+    font-size: 20px;
     color: {C_NARANJA};
     text-align: center;
     margin-top: -10px;
