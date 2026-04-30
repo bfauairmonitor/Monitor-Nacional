@@ -22,8 +22,8 @@ C_BARRA_BASE = "#2F4F4F"
 C_BARRA_RES = "#191970"  
 
 # ALTURAS DEFINIDAS POR FILA
-ALT_SUP = 220
-ALT_INF = 250
+ALT_SUP = 230
+ALT_INF = 230
 
 # ==========================================
 # 2. CONFIGURACIÓN DE PÁGINA
@@ -158,7 +158,7 @@ with col_inf_1:
     try:
         df5 = dict_hojas['Liquidez Monetaria'].iloc[:, [0, 6, 7]].copy()
         df5['Fecha_DT'] = pd.to_datetime(df5.iloc[:, 0])
-        df_f5 = df5.sort_values('Fecha_DT').tail(5)
+        df_f5 = df5.sort_values('Fecha_DT').tail(4)
         fechas5, montos5, var5 = [d.strftime('%d/%m/%Y') for d in df_f5['Fecha_DT']], df_f5.iloc[:, 1] / 1000000, df_f5.iloc[:, 2]
         fig5 = go.Figure()
         fig5.add_trace(go.Bar(x=fechas5, y=montos5, text=[f"{int(v):,}MM" for v in montos5], textposition='outside', marker_color=C_BARRA_INF, textfont=dict(color=C_BLANCO, size=20), width=0.4))
@@ -173,7 +173,7 @@ with col_inf_2:
     try:
         df4 = dict_hojas['Base Monetaria'].iloc[:, [0, 1, 2]].copy()
         df4['Fecha_DT'] = pd.to_datetime(df4.iloc[:, 0])
-        df_f4 = df4.sort_values('Fecha_DT').tail(5)
+        df_f4 = df4.sort_values('Fecha_DT').tail(4)
         fechas4, montos4, var4 = [d.strftime('%d/%m/%Y') for d in df_f4['Fecha_DT']], df_f4.iloc[:, 1] / 1000000, df_f4.iloc[:, 2]
         fig4 = go.Figure()
         fig4.add_trace(go.Bar(x=fechas4, y=montos4, text=[f"{v:,.1f}MM" for v in montos4], textposition='outside', marker_color=C_BARRA_BASE, textfont=dict(color=C_BLANCO, size=20), width=0.4))
@@ -188,7 +188,7 @@ with col_inf_3:
     try:
         df6 = dict_hojas['Resev. Internacionales $'].iloc[:, [0, 3, 4]].copy()
         df6['Fecha_DT'] = pd.to_datetime(df6.iloc[:, 0])
-        df_f6 = df6.sort_values('Fecha_DT').tail(5)
+        df_f6 = df6.sort_values('Fecha_DT').tail(4)
         fechas6, montos6, var6 = [d.strftime('%d/%m/%Y') for d in df_f6['Fecha_DT']], df_f6.iloc[:, 1], df_f6.iloc[:, 2]
         fig6 = go.Figure()
         fig6.add_trace(go.Bar(x=fechas6, y=montos6, text=[f"{int(v):,}MM" for v in montos6], textposition='outside', marker_color=C_BARRA_RES, textfont=dict(color=C_BLANCO, size=20), width=0.5))
