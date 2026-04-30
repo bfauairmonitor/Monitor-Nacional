@@ -126,7 +126,7 @@ with col_sup_1:
         fig1 = go.Figure(go.Scatter(
             x=fechas1, y=df1.iloc[:, 1], mode='lines+markers+text', 
             text=[f"{val}%" for val in df1.iloc[:, 1]], textposition="top center", 
-            cliponaxis=False, line=dict(color='#60CCC8', width=4), 
+            cliponaxis=False, line=dict(color='#60CCC8', width=2), 
             marker=dict(size=10, color='#FFFFFF', line=dict(width=2, color='#60CCC8')), 
             textfont=dict(size=22, color="white")
         ))
