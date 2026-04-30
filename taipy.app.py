@@ -232,7 +232,7 @@ with col_inf_2:
             x=fechas4, y=montos4, text=[f"{v:,.1f}MM" for v in montos4], 
             textposition='outside', marker_color='#2F4F4F', 
             textfont=dict(color="white", size=22),
-            width=0.5
+            width=0.4
         ))
         escala4 = montos4.max() / (var4.abs().max() if var4.abs().max() != 0 else 1)
         fig4.add_trace(go.Scatter(x=fechas4, y=var4 * escala4 * 0.7, mode='lines+markers+text', text=[f"{v:.2f}%" for v in var4], textposition="top center", line=dict(color=C_NARANJA, width=3), textfont=dict(color=C_NARANJA, size=18), cliponaxis=False))
