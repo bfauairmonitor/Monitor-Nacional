@@ -111,18 +111,7 @@ except Exception as e:
     st.error(f"Error al cargar Excel: {e}")
     dict_hojas = {}
 
-st.markdown(f"""
-<div class="header-container">
-<div style="display: flex; align-items: center; gap: 20px;">
-{logo_html}
-<div>
-<p class="title-main">UNIDAD ADMINISTRATIVA INTEGRAL DE RIESGO</p>
-<p class="subtitle-sub">Indicadores Macroeconómicos BCV.</p>
-</div>
-</div>
-<div class="update-text">Última actualización:<br><b>{ahora}</b></div>
-</div>
-""", unsafe_allow_html=True)
+# SECCIÓN DE ENCABEZADO ELIMINADA POR SOLICITUD DEL USUARIO
 
 # ==========================================
 # 5. FILA SUPERIOR (AJUSTE: 35% - 35% - 30%)
