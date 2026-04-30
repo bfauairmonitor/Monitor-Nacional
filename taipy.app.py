@@ -1,7 +1,6 @@
 import streamlit as st
 import pandas as pd
 import plotly.graph_objects as go
-import base64
 import time
 from pathlib import Path
 from datetime import datetime, timedelta, timezone
