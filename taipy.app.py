@@ -85,7 +85,7 @@ with col_titulo:
 
 st.markdown("<hr style='margin:10px 0px'>", unsafe_allow_html=True)
 
-ruta = r"C:\Monitor_test\Data_Situacional_Ejemplo.xlsx"
+ruta = "Datos_Macroeconomicos.xlsx"
 
 # --- FUNCIONES DE FORMATO ---
 def format_mm(valor):
