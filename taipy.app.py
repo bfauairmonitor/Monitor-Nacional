@@ -1,277 +1,547 @@
 import streamlit as st
 import pandas as pd
 import plotly.graph_objects as go
-import base64
-import time
-from pathlib import Path
-from datetime import datetime, timedelta
+from streamlit_autorefresh import st_autorefresh
+from datetime import datetime
 
-# =========================================
-# 1. VARIABLES GLOBALES (CASCADA DE EDICIÓN)
-# ==========================================
-REFRESH_INT = 600000  # Intervalo en segundos (10 minutos)
-C_FONDO = "#0E1117"
-C_AZUL = "#2b5dda"
-C_TITULO = "#87CEEB"
-C_NARANJA = "#FFDEAD"
-C_BLANCO = "#FFFFFF"
-ALT_SUP = 260
-ALT_INF = 280
+# 1. Configuración de página
+st.set_page_config(page_title="Sala Situacional - UIAR", layout="wide")
 
-# ==========================================
-# 2. CONFIGURACIÓN DE PÁGINA
-# ==========================================
-st.set_page_config(
-    page_title="Dashboard Administrativo de Riesgo",
-    layout="wide",
-    initial_sidebar_state="collapsed"
-)
+# Refresco automático cada 5 minutos
+st_autorefresh(interval=300000, key="datarefresh")
 
-# Lógica de refresco nativo para evitar errores de componentes en TV
-if "last_refresh" not in st.session_state:
-    st.session_state.last_refresh = time.time()
+# --- ESTILOS CSS ---
+st.markdown("""
+    <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+    
+    #MainMenu {visibility: hidden;} 
+    footer {visibility: hidden;} 
+    header {visibility: hidden;} 
+    .stAppDeployButton {display:none;}
+    
+    .block-container { 
+        padding-top: 0rem !important; 
+        padding-bottom: 0rem !important; 
+        max-width: 100%; 
+        background-color: #f2f2f2; 
+    }
 
-# ==========================================
-# 3. ESTILOS CSS
-# ==========================================
-st.markdown(f"""
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700;900&display=swap');
-[data-testid="stHeader"], header {{ display: none !important; height: 0px !important; }}
-.stApp {{ margin-top: -90px !important; background-color: {C_FONDO} !important; }}
-.main .block-container {{ padding: 0px 1rem !important; max-width: 100%; }}
-html, body, .main {{ 
-font-family: 'Roboto', sans-serif; 
-overflow: hidden; 
-background-color: {C_FONDO} !important;
-color: white;
-}}
-.header-container {{
-display: flex; justify-content: space-between; align-items: center;
-padding: 15px 5px; background-color: {C_FONDO}; 
-border-bottom: 2px solid #444; height: auto; margin-bottom: 30px;
-}}
-.title-main {{ font-size: 3.1rem; margin: 0; color: {C_TITULO}; }}
-.subtitle-sub {{ font-size: 2.2rem; color: #ffffff; margin: 0; }}
-.update-text {{ font-size: 1rem; color: {C_NARANJA}; text-align: right; line-height: 1.1; }}
-[data-testid="stVerticalBlock"] {{ gap: 0rem !important; }}
-.st-emotion-cache-18kf3ut{{ margin-top:20px;}}
-.stHorizontalBlock{{ margin-top:10px;}}
+    html, body, [class*="css"], .main { 
+        font-family: 'Poppins', sans-serif; 
+        background-color: #f8f9fc; 
+    }
+    
+    .titulo-principal { color: #1a202c; font-size: 32px; font-weight: 600; margin: 0; line-height: 1.1; }
+    .subtitulo-principal { color: #2B5DDA; font-size: 24px; font-weight: 300; margin: 0; }
+    
+    .contenedor-titulos { margin-bottom: 10px; padding-left: 10px; }
+    .grafico-titulo { 
+        color: #2b5dda; 
+        font-family: 'Poppins', sans-serif; 
+        font-size: 28px; 
+        font-weight: 400; 
+        margin: 0; 
+    }
+    .grafico-subtitulo { 
+        color: #333; 
+        font-family: 'Poppins', sans-serif; 
+        font-size: 24px; 
+        font-weight: 300; 
+        margin: 0; 
+    }
+    
+    [data-testid="stMetricValue"] { font-size: 22px !important; font-family: 'Poppins', sans-serif !important; }
+    [data-testid="stMetricLabel"] { font-size: 13px !important; }
+    
+    .stMetric { 
+        background-color: white; 
+        padding: 8px; 
+        border-radius: 10px; 
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05); 
+    }
 
-/* Estilo para los conceptos debajo de los gráficos */
-.concepto-texto {{
-    font-size: 8vw;
-    color: {C_NARANJA};
-    text-align: center;
-    margin-top: -10px;
-    font-weight: 500;
-    padding:5px 20px;
-}}
-</style>
-""", unsafe_allow_html=True)
+    /* --- NUEVA REGLA PARA BORDES DE GRÁFICOS --- */
+    .stPlotlyChart {
+        border: 1px solid #2b5dda;
+        border-radius: 15px;
+        overflow: hidden; /* Asegura que el gráfico no se salga de las esquinas redondeadas */
+        background-color: white;
+    }
+    </style>
+    """, unsafe_allow_html=True)
 
-# ==========================================
-# 4. FUNCIONES Y LÓGICA DE DATOS
-# ==========================================
+# --- ENCABEZADO ---
+col_logo, col_titulo = st.columns([2, 8])
+with col_logo:
+    try: 
+        st.image("assets/logo.png", width=400) 
+    except: 
+        st.info("Logo UIAR")
 
-@st.cache_data
-def get_base64(bin_file):
+with col_titulo:
+    st.markdown('<p class="titulo-principal">Sala Situacional</p>', unsafe_allow_html=True)
+    st.markdown('<p class="subtitulo-principal">Unidad Integral de Administración de Riesgo</p>', unsafe_allow_html=True)
+
+st.markdown("<hr style='margin:10px 0px'>", unsafe_allow_html=True)
+
+ruta = r"C:\Monitor_test\Data_Situacional_Ejemplo.xlsx"
+
+# --- FUNCIONES DE FORMATO ---
+def format_mm(valor):
     try:
-        with open(bin_file, 'rb') as f: return base64.b64encode(f.read()).decode()
-    except: return ""
+        if pd.isna(valor): return "0"
+        if abs(valor) >= 1_000_000: return f"{valor/1_000_000:.1f}MM"
+        return f"{valor:,.0f}"
+    except: return "0"
 
-@st.cache_data(ttl=600, show_spinner=False)
-def cargar_datos_excel(ruta):
-    return pd.read_excel(ruta, sheet_name=None, engine='openpyxl')
+def fix_percent(x):
+    if pd.isna(x): return "0.00%"
+    try:
+        if abs(x) < 1.0: return f"{x*100:.2f}%"
+        return f"{x:.2f}%"
+    except: return "0.00%"
 
-# Verificación de tiempo para refresco automático nativo
-if time.time() - st.session_state.last_refresh > REFRESH_INT:
-    st.session_state.last_refresh = time.time()
-    st.rerun()
-
-ahora = (datetime.utcnow() - timedelta(hours=4)).strftime("%d/%m/%Y %I:%M %p")
-logo_path = Path("assets/logo.png")
-logo_b64 = get_base64(logo_path)
-logo_html = f'<img src="data:image/png;base64,{logo_b64}" style="height:3vh;">' if logo_b64 else ''
-
+# ==========================================
+# GRAFICO 1: LIQUIDEZ MONETARIA (CORREGIDO)
+# ==========================================
 try:
-    placeholder = st.empty()
-    with placeholder.container():
-        with st.spinner(""):
-            st.markdown(f"""
-                <div style="text-align: center; margin-bottom: 10px;">
-                    <p style="color: {C_NARANJA}; font-size: 1.2rem; font-weight: 500;">
-                        ESTAMOS ACTUALIZANDO LOS INDICADORES, POR FAVOR ESPERE...
-                    </p>
-                </div>
-            """, unsafe_allow_html=True)
-            dict_hojas = cargar_datos_excel('Datos_Macroeconomicos.xlsx')
-    placeholder.empty()
-except Exception as e:
-    st.error(f"Error al cargar Excel: {e}")
-    dict_hojas = {}
+    df_liq = pd.read_excel(ruta, sheet_name='Liquidez Monetaria')
+    
+    # 1. Limpiamos filas que estén totalmente vacías o donde la columna de Liquidez sea NaN
+    # Usamos la columna en el índice 6 (Liquidez) para validar que haya datos reales
+    df_liq = df_liq.dropna(subset=[df_liq.columns[6]])
+    
+    # 2. Ahora sí tomamos las últimas 6 filas reales
+    data_liq = df_liq.tail(6).reset_index(drop=True) 
+    
+    # Seleccionamos columnas y renombramos
+    data_liq = data_liq.iloc[:, [0, 6, 7]] 
+    data_liq.columns = ['Semana', 'Liquidez', 'Variacion']
+    
+    # Convertimos la columna Semana a string para evitar el error "NaT" en el eje X
+    data_liq['Semana_Txt'] = data_liq['Semana'].dt.strftime('%d-%m-%Y') if pd.api.types.is_datetime64_any_dtype(data_liq['Semana']) else data_liq['Semana'].astype(str)
+    
+    data_liq['Liquidez_Label'] = data_liq['Liquidez'].apply(format_mm)
+    data_liq['Var_Label'] = data_liq['Variacion'].apply(lambda x: f"<b>{fix_percent(x)}</b>")
 
-st.markdown(f"""
-<div class="header-container">
-<div style="display: flex; align-items: center; gap: 20px;">
-{logo_html}
-<div>
-<p class="title-main">UNIDAD ADMINISTRATIVA INTEGRAL DE RIESGO</p>
-<p class="subtitle-sub">Indicadores Macroeconómicos BCV.</p>
-</div>
-</div>
-<div class="update-text">Última actualización:<br><b>{ahora}</b></div>
-</div>
-""", unsafe_allow_html=True)
+    col_graf, col_met = st.columns([8, 2])
 
-# ==========================================
-# 5. FILA SUPERIOR (AJUSTE: 35% - 35% - 30%)
-# =========================================
-col_sup_1, col_sup_2, col_sup_3 = st.columns([0.35, 0.35, 0.30])
+    with col_graf:
+        st.markdown('<div class="contenedor-titulos"><p class="grafico-titulo">Liquidez Monetaria</p></div>', unsafe_allow_html=True)
+        
+        fig1 = go.Figure()
 
-with col_sup_1: 
-    try:
-        df1 = dict_hojas['Tasa Overnight Diaria'].iloc[:, [0, 7]] 
-        df1 = df1.dropna().tail(7)
-        fechas1 = [d.strftime('%d/%m/%Y') for d in pd.to_datetime(df1.iloc[:, 0])]
-        fig1 = go.Figure(go.Scatter(
-            x=fechas1, y=df1.iloc[:, 1], mode='lines+markers+text', 
-            text=[f"{val}%" for val in df1.iloc[:, 1]], textposition="top center", 
-            cliponaxis=False, line=dict(color='#60CCC8', width=4, shape='spline'), 
-            marker=dict(size=10, color='#FFFFFF', line=dict(width=2, color='#60CCC8')), 
-            textfont=dict(size=22, color="white")
+        # Serie Principal
+        fig1.add_trace(go.Scatter(
+            x=data_liq['Semana_Txt'], y=data_liq['Liquidez'], 
+            mode='lines+markers+text', 
+            text=data_liq['Liquidez_Label'], textposition="top center",
+            line=dict(color='#5a67d8', width=3),
+            marker=dict(size=8, color="#fd941c", line=dict(width=2, color='white')),
+            textfont=dict(family="Poppins", size=11, color="#2b5dda"),
+            name="Liquidez"
         ))
+        
+        # Variación % (se mantiene igual...)
+        pos = data_liq[data_liq['Variacion'] >= 0]
+        fig1.add_trace(go.Scatter(
+            x=pos['Semana_Txt'], y=pos['Variacion'], yaxis="y2",
+            mode='markers+text',
+            text=pos['Var_Label'], textposition="bottom center",
+            textfont=dict(family="Poppins", size=10, color="#2F855A"), 
+            marker=dict(opacity=0), showlegend=False
+        ))
+
+        neg = data_liq[data_liq['Variacion'] < 0]
+        fig1.add_trace(go.Scatter(
+            x=neg['Semana_Txt'], y=neg['Variacion'], yaxis="y2",
+            mode='markers+text',
+            text=neg['Var_Label'], textposition="bottom center",
+            textfont=dict(family="Poppins", size=10, color="#C53030"), 
+            marker=dict(opacity=0), showlegend=False
+        ))
+
+        fig1.add_trace(go.Scatter(
+            x=data_liq['Semana_Txt'], y=data_liq['Variacion'], yaxis="y2",
+            mode='lines', line=dict(color='#A0AEC0', width=1, dash='dot'),
+            hoverinfo='skip', showlegend=False
+        ))
+
         fig1.update_layout(
-            title=dict(text="TASA OVERNIGHT DIARIA BCV", font=dict(color="white")), 
-            paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', 
-            height=ALT_SUP, margin=dict(l=10, r=10, t=40, b=40), 
-            xaxis=dict(tickangle=-30, tickfont=dict(color="white", size=18)), 
-            yaxis=dict(gridcolor='#222222', tickfont=dict(color="white")), font=dict(color="#ffffff")
+            plot_bgcolor='white', paper_bgcolor='rgba(0,0,0,0)', height=300, 
+            margin=dict(l=10, r=10, t=10, b=10),
+            xaxis=dict(type='category', showgrid=False, tickfont=dict(family="Poppins", size=10, color="#000000")),
+            yaxis=dict(showgrid=True, gridcolor='#edf2f7', tickfont=dict(family="Poppins", size=10, color="#000000")),
+            yaxis2=dict(overlaying='y', side='right', showgrid=False, showticklabels=False),
+            showlegend=False, hovermode="x unified"
         )
         st.plotly_chart(fig1, use_container_width=True, config={'displayModeBar': False})
-        st.markdown('<p class="concepto-texto">TASA PROMEDIO DIARIA APLICADA A PRÉSTAMOS INTERBANCARIOS O DEPÓSITOS A MUY CORTO PLAZO (UN DIA HABIL).</p>', unsafe_allow_html=True)
-    except Exception as e: st.error(f"Error G1: {e}")
-        
-with col_sup_2: 
+
+    with col_met:
+        st.markdown("<div style='margin-top: 40px;'></div>", unsafe_allow_html=True)
+        st.metric("Actual", f"Bs. {data_liq['Liquidez'].iloc[-1]:,.0f}", delta=fix_percent(data_liq['Variacion'].iloc[-1]))
+        st.markdown("<div style='margin-top: 20px;'></div>", unsafe_allow_html=True)
+        st.metric("Promedio", f"Bs. {data_liq['Liquidez'].mean():,.0f}")
+
+except Exception as e:
+    st.error(f"Error en Liquidez: {e}")
+
+# ==========================================
+# FILA 2: BASES Y RESERVAS (EJES OPTIMIZADOS)
+# ==========================================
+col_inf_izq, col_inf_der = st.columns([2, 2]) 
+
+with col_inf_izq:
     try:
-        df2 = dict_hojas['Reservas Bancarias Excedentari'].iloc[:, [0, 1]]
-        df2 = df2.dropna().head(7).iloc[::-1]
-        fechas2 = [d.strftime('%d/%m/%Y') for d in pd.to_datetime(df2.iloc[:, 0])]
-        fig2 = go.Figure(go.Bar(
-            x=fechas2, y=df2.iloc[:, 1]/1000, 
-            text=[f"{v/1000:,.3f}MM" for v in df2.iloc[:, 1]], 
-            textposition='outside', marker_color=C_AZUL, cliponaxis=False, 
-            textfont=dict(size=22, color="white"),
-            width=0.6  # <--- MODIFICAR ANCHO DE BARRAS AQUÍ (0.1 a 1.0)
+        df_bases = pd.read_excel(ruta, sheet_name='Bases Monetarias', usecols="A:C")
+        data_bases = df_bases.dropna(how='all').tail(6).copy()
+        data_bases.columns = ['Fecha', 'Monto', 'Variacion']
+        data_bases['Fecha_Eje'] = pd.to_datetime(data_bases['Fecha']).dt.strftime('%Y-%m-%d')
+        
+        st.markdown('<div class="contenedor-titulos"><p class="grafico-titulo">Bases Monetarias BS.</p> <p class="grafico-subtitulo">Últimas seis (6) Semanas</p></div>', unsafe_allow_html=True)
+        fig2 = go.Figure()
+        
+        # 1. Barras con Montos HORIZONTALES
+        fig2.add_trace(go.Bar(
+            x=data_bases['Fecha_Eje'], y=data_bases['Monto'], 
+            text=data_bases['Monto'].apply(format_mm), 
+            textposition='inside', 
+            insidetextanchor='middle',
+            textangle=0, 
+            textfont=dict(family="Poppins", size=11, color="white"), 
+            marker_color="#90A4AE", name="Monto"
         ))
+
+        # 2. Línea de tendencia
+        fig2.add_trace(go.Scatter(
+            x=data_bases['Fecha_Eje'], y=data_bases['Variacion'], yaxis="y2",
+            mode='lines', 
+            line=dict(color="#E0F7FA", width=2, dash='dot'),
+            hoverinfo='skip', showlegend=False
+        ))
+
+        # 3. Puntos Naranja + Variación %
+        for i, row in data_bases.iterrows():
+            color_texto = "#2F855A" if row['Variacion'] >= 0 else "#C53030"
+            fig2.add_trace(go.Scatter(
+                x=[row['Fecha_Eje']], y=[row['Variacion']], yaxis="y2",
+                mode='markers+text',
+                text=[f"<b>{fix_percent(row['Variacion'])}</b>"], 
+                textposition="bottom center",
+                textfont=dict(family="Poppins", size=11, color=color_texto),
+                marker=dict(size=10, color="#fd941c", line=dict(width=1, color='white')),
+                showlegend=False
+            ))
+
         fig2.update_layout(
-            title=dict(text="RESERVAS BANCARIAS EXCEDENTARIAS (EN BOLIVARES) BCV", font=dict(color="white")), 
-            paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', 
-            height=ALT_SUP, margin=dict(l=10, r=10, t=30, b=40), 
-            xaxis=dict(tickangle=-30, tickfont=dict(color="white", size=18)), 
-            yaxis=dict(gridcolor='#222222', tickfont=dict(color="white")), font=dict(color=C_BLANCO)
+            plot_bgcolor='white', height=300, margin=dict(l=10, r=10, t=10, b=10), 
+            barmode='overlay',
+            # --- AJUSTE DE TAMAÑO EN EJES ---
+            xaxis=dict(type='category', tickfont=dict(color="#000000", size=12), tickangle=0),
+            yaxis=dict(showgrid=True, gridcolor='#edf2f7', tickfont=dict(color="#000000", size=12)),
+            # -------------------------------
+            yaxis2=dict(overlaying='y', side='right', showgrid=False, showticklabels=False, range=[-0.5, 1.5]),
+            showlegend=False
         )
         st.plotly_chart(fig2, use_container_width=True, config={'displayModeBar': False})
-        st.markdown('<p class="concepto-texto">CANTIDAD DE DINERO EXTRA QUE POSEEN LOS BANCOS EN EL BCV POR ENCIMA DE LO QUE LA LEY INDICA (ENCAJE LEGAL).</p>', unsafe_allow_html=True)
-    except Exception as e: st.error(f"Error G2: {e}")
+    except Exception as e: st.error(f"Error Bases: {e}")
 
-with col_sup_3: 
+with col_inf_der:
     try:
-        df3 = dict_hojas['Tasa Overnight Mensual'].iloc[0:5, [0, 3]]
-        fig3 = go.Figure(go.Scatter(
-            x=df3.iloc[:, 0], y=df3.iloc[:, 1], mode='lines+markers+text', 
-            text=[f"{val}%" for val in df3.iloc[:, 1]], textposition="top center", 
-            cliponaxis=False, line=dict(color=C_NARANJA, width=3, shape='spline'), 
-            textfont=dict(size=22, color="white")
+        df_res_bs = pd.read_excel(ruta, sheet_name='Resev. Internacionales Bs', usecols="A:C")
+        data_res_bs = df_res_bs.dropna(how='all').tail(6).copy()
+        data_res_bs.columns = ['Fecha', 'Monto', 'Variacion']
+        data_res_bs['Fecha_Eje'] = pd.to_datetime(data_res_bs['Fecha']).dt.strftime('%Y-%m-%d')
+
+        st.markdown('<div class="contenedor-titulos"><p class="grafico-titulo">Reservas Internacionales Bs.</p> <p class="grafico-subtitulo">Últimas seis (6) Semanas</p></div>', unsafe_allow_html=True)
+        fig3 = go.Figure()
+        
+        # 1. Barras con Montos HORIZONTALES
+        fig3.add_trace(go.Bar(
+            x=data_res_bs['Fecha_Eje'], y=data_res_bs['Monto'], 
+            text=data_res_bs['Monto'].apply(format_mm), 
+            textposition='inside', 
+            insidetextanchor='middle',
+            textangle=0, 
+            textfont=dict(family="Poppins", size=11, color="white"),
+            marker_color="#43be95", name="Monto"
         ))
+
+        # 2. Línea de tendencia
+        fig3.add_trace(go.Scatter(
+            x=data_res_bs['Fecha_Eje'], y=data_res_bs['Variacion'], yaxis="y2",
+            mode='lines', 
+            line=dict(color="#E0F7FA", width=2, dash='dot'),
+            hoverinfo='skip', showlegend=False
+        ))
+
+        # 3. Variación %
+        for i, row in data_res_bs.iterrows():
+            color_texto = "#2F855A" if row['Variacion'] >= 0 else "#C53030"
+            fig3.add_trace(go.Scatter(
+                x=[row['Fecha_Eje']], y=[row['Variacion']], yaxis="y2",
+                mode='markers+text',
+                text=[f"<b>{fix_percent(row['Variacion'])}</b>"], 
+                textposition="bottom center",
+                textfont=dict(family="Poppins", size=11, color=color_texto),
+                marker=dict(size=10, color="#fd941c", line=dict(width=1, color='white')),
+                showlegend=False
+            ))
+
         fig3.update_layout(
-            title=dict(text="TASA OVERNIGHT (% MENSUAL) BCV", font=dict(color="white")), 
-            paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', 
-            height=ALT_SUP, margin=dict(l=25, r=5, t=45, b=30), 
-            xaxis=dict(tickfont=dict(color="white", size=18)), 
-            yaxis=dict(showticklabels=False, gridcolor='#222222'), font=dict(color='#2F4F4F')
+            plot_bgcolor='white', height=300, margin=dict(l=10, r=10, t=10, b=10), 
+            barmode='overlay',
+            # --- AJUSTE DE TAMAÑO EN EJES ---
+            xaxis=dict(type='category', tickfont=dict(color="#000000", size=12), tickangle=0),
+            yaxis=dict(showgrid=True, gridcolor='#edf2f7', tickfont=dict(color="#000000", size=12)),
+            # -------------------------------
+            yaxis2=dict(overlaying='y', side='right', showgrid=False, showticklabels=False, range=[-0.5, 1.5]),
+            showlegend=False
         )
         st.plotly_chart(fig3, use_container_width=True, config={'displayModeBar': False})
-        st.markdown('<p class="concepto-texto">VALOR RESULTANTE DE PROMEDIAR LAS TASAS DE INTERÉS DIARIAS A LAS QUE SE NEGOCIARON LOS PRÉSTAMOS ENTRE BANCOS EN EL MES.</p>', unsafe_allow_html=True)
-    except Exception as e: st.error(f"Error G3: {e}")
-
-# LÍNEA DIVISORIA ENTRE FILAS
-st.markdown("<hr style='border: 0.5px solid #444; margin: 15px 0;'>", unsafe_allow_html=True)
+    except Exception as e: st.error(f"Error Res Bs: {e}")
 
 # ==========================================
-# 6. FILA INFERIOR (AJUSTE: 33% C/U - ORDEN: LIQUIDEZ, BASE, RESERVAS)
+# GRAFICO 4: RESERVAS INTERNACIONALES $ (CORREGIDO)
 # ==========================================
-col_inf_1, col_inf_2, col_inf_3 = st.columns([0.33, 0.33, 0.34])
-hoy = (datetime.utcnow() - timedelta(hours=4))
+try:
+    df_usd = pd.read_excel(ruta, sheet_name='Resev. Internacionales $', usecols=[0, 3, 4])
+    df_usd = df_usd.dropna(subset=[df_usd.columns[1]]) # Limpia filas sin montos
+    df_usd.columns = ['Fecha', 'Monto', 'Variacion']
+    df_usd['Fecha_DT'] = pd.to_datetime(df_usd['Fecha'])
+    
+    hoy = datetime.now()
+    
+    # --- NUEVA LÓGICA DE FILTRADO: MES ACTUAL Y MES ANTERIOR ---
+    # Filtramos por año actual y meses (Mes actual y Mes actual - 1)
+    data_usd = df_usd[
+        (df_usd['Fecha_DT'].dt.year == hoy.year) & 
+        (df_usd['Fecha_DT'].dt.month.isin([hoy.month, hoy.month - 1]))
+    ].copy()
+    
+    data_usd = data_usd.sort_values('Fecha_DT').reset_index(drop=True)
+    data_usd['Fecha_Txt'] = data_usd['Fecha_DT'].dt.strftime('%d-%m-%Y')
 
-with col_inf_1: 
-    try:
-        df5 = dict_hojas['Liquidez Monetaria'].iloc[:, [0, 6, 7]]
-        df5['Fecha_DT'] = pd.to_datetime(df5.iloc[:, 0])
-        df_f5 = df5[(df5['Fecha_DT'].dt.month == hoy.month) & (df5['Fecha_DT'].dt.year == hoy.year)]
-        if df_f5.empty:
-            m, a = (hoy.month-1, hoy.year) if hoy.month > 1 else (12, hoy.year-1)
-            df_f5 = df5[(df5['Fecha_DT'].dt.month == m) & (df5['Fecha_DT'].dt.year == a)]
-        df_f5 = df_f5.sort_values('Fecha_DT')
-        fechas5, montos5, var5 = [d.strftime('%d/%m/%Y') for d in df_f5['Fecha_DT']], df_f5.iloc[:, 1] / 1000000, df_f5.iloc[:, 2]
-        fig5 = go.Figure()
-        fig5.add_trace(go.Bar(
-            x=fechas5, y=montos5, text=[f"{int(v):,}MM" for v in montos5], 
-            textposition='outside', marker_color='#483D8B', 
-            textfont=dict(color="white", size=22),
-            width=0.4  # <--- MODIFICAR ANCHO DE BARRAS AQUÍ
-        ))
-        escala5 = montos5.max() / (var5.abs().max() if var5.abs().max() != 0 else 1)
-        fig5.add_trace(go.Scatter(x=fechas5, y=var5 * escala5 * 0.7, mode='lines+markers+text', text=[f"{v:.2f}%" for v in var5], textposition="top center", line=dict(color=C_NARANJA, width=3), textfont=dict(color=C_NARANJA, size=18), cliponaxis=False))
-        fig5.update_layout(title=dict(text="LIQUIDÉZ MONETARIA BCV", font=dict(color="white")), paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', height=ALT_INF, margin=dict(l=5, r=10, t=35, b=40), xaxis=dict(tickfont=dict(color="white", size=15)), yaxis=dict(showticklabels=False, range=[montos5.min()*-0.4, montos5.max()*1.4]), showlegend=False)
-        st.plotly_chart(fig5, use_container_width=True, config={'displayModeBar': False})
-        st.markdown('<p class="concepto-texto">CANTIDAD TOTAL DE DINERO EN CIRCULACIÓN (EFECTIVO, CUENTAS CORRIENTES Y DE AHORRO) DISPONIBLES EN UNA ECONOMÍA PARA REALIZAR TRANSACCIONES.</p>', unsafe_allow_html=True)
-    except Exception as e: st.error(f"Error G5: {e}")
+    # Cálculos para los botones (métricas)
+    idx_max = data_usd['Monto'].idxmax()
+    idx_min = data_usd['Monto'].idxmin()
+    
+    monto_alto = data_usd.loc[idx_max, 'Monto']
+    var_alto = fix_percent(data_usd.loc[idx_max, 'Variacion'])
+    
+    monto_bajo = data_usd.loc[idx_min, 'Monto']
+    var_bajo = fix_percent(data_usd.loc[idx_min, 'Variacion'])
 
-with col_inf_2: 
-    try:
-        df4 = dict_hojas['Base Monetaria'].iloc[:, [0, 1, 2]]
-        df4['Fecha_DT'] = pd.to_datetime(df4.iloc[:, 0])
-        df_f4 = df4[(df4['Fecha_DT'].dt.month == hoy.month) & (df4['Fecha_DT'].dt.year == hoy.year)]
-        if df_f4.empty:
-            m, a = (hoy.month-1, hoy.year) if hoy.month > 1 else (12, hoy.year-1)
-            df_f4 = df4[(df4['Fecha_DT'].dt.month == m) & (df4['Fecha_DT'].dt.year == a)]
-        df_f4 = df_f4.sort_values('Fecha_DT')
-        fechas4, montos4, var4 = [d.strftime('%d/%m/%Y') for d in df_f4['Fecha_DT']], df_f4.iloc[:, 1] / 1000000, df_f4.iloc[:, 2]
+    # Maquetación 80% Gráfico, 20% Métricas
+    col_graf, col_met = st.columns([8, 2])
+
+    with col_graf:
+        st.markdown("""
+            <div class="contenedor-titulos">
+                <p class="grafico-titulo">Reservas Internacionales $</p>
+                <p class="grafico-subtitulo">Evolución en divisas (USD) - Rango Reciente</p>
+            </div>
+        """, unsafe_allow_html=True)
+
         fig4 = go.Figure()
-        fig4.add_trace(go.Bar(
-            x=fechas4, y=montos4, text=[f"{v:,.1f}MM" for v in montos4], 
-            textposition='outside', marker_color='#2F4F4F', 
-            textfont=dict(color="white", size=22),
-            width=0.5  # <--- MODIFICAR ANCHO DE BARRAS AQUÍ
-        ))
-        escala4 = montos4.max() / (var4.abs().max() if var4.abs().max() != 0 else 1)
-        fig4.add_trace(go.Scatter(x=fechas4, y=var4 * escala4 * 0.7, mode='lines+markers+text', text=[f"{v:.2f}%" for v in var4], textposition="top center", line=dict(color=C_NARANJA, width=3), textfont=dict(color=C_NARANJA, size=18), cliponaxis=False))
-        fig4.update_layout(title=dict(text="BASE MONETARIA BCV", font=dict(color="white")), paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', height=ALT_INF, margin=dict(l=5, r=5, t=30, b=40), xaxis=dict(tickfont=dict(color="white", size=15)), yaxis=dict(showticklabels=False, range=[montos4.min()*-0.4, montos4.max()*1.4]), showlegend=False)
-        st.plotly_chart(fig4, use_container_width=True, config={'displayModeBar': False})
-        st.markdown('<p class="concepto-texto">MONTO TOTAL DE DINERO DE CURSO LEGAL EMITIDO POR BCV (EFECTIVO + RESERVAS BANCARIAS).</p>', unsafe_allow_html=True)
-    except Exception as e: st.error(f"Error G4: {e}")
 
-with col_inf_3: 
-    try:
-        df6 = dict_hojas['Resev. Internacionales $'].iloc[:, [0, 3, 4]]
-        df6['Fecha_DT'] = pd.to_datetime(df6.iloc[:, 0])
-        df_f6 = df6[(df6['Fecha_DT'].dt.month == hoy.month) & (df6['Fecha_DT'].dt.year == hoy.year)]
-        if df_f6.empty:
-            m, a = (hoy.month-1, hoy.year) if hoy.month > 1 else (12, hoy.year-1)
-            df_f6 = df6[(df6['Fecha_DT'].dt.month == m) & (df6['Fecha_DT'].dt.year == a)]
-        df_f6 = df_f6.sort_values('Fecha_DT')
-        fechas6, montos6, var6 = [d.strftime('%d/%m/%Y') for d in df_f6['Fecha_DT']], df_f6.iloc[:, 1], df_f6.iloc[:, 2]
-        fig6 = go.Figure()
-        fig6.add_trace(go.Bar(
-            x=fechas6, y=montos6, text=[f"{int(v):,}MM" for v in montos6], 
-            textposition='outside', marker_color='#191970', 
-            textfont=dict(color="white", size=22),
-            width=0.5  # <--- MODIFICAR ANCHO DE BARRAS AQUÍ
+        # Línea de Montos y etiquetas Púrpuras
+        fig4.add_trace(go.Scatter(
+            x=data_usd['Fecha_Txt'], y=data_usd['Monto'], 
+            mode='lines+markers+text', 
+            text=data_usd['Monto'].apply(lambda x: f"<b>{x:,.1f}MM</b>"), 
+            textposition="top center",
+            line=dict(color='#C5CAE9', width=2), 
+            marker=dict(size=8, color="#C5CAE9", line=dict(width=2, color='white')),
+            textfont=dict(family="Poppins", size=11, color="#6A1B9A")
         ))
-        escala6 = montos6.max() / (var6.abs().max() if var6.abs().max() != 0 else 1)
-        fig6.add_trace(go.Scatter(x=fechas6, y=var6 * escala6 * 0.7, mode='lines+markers+text', text=[f"{v:.2f}%" for v in var6], textposition="top center", line=dict(color=C_NARANJA, width=3), textfont=dict(color=C_NARANJA, size=19), cliponaxis=False))
-        fig6.update_layout(title=dict(text="RESERVAS INTERNACIONALES ($) BCV", font=dict(color="white")), paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', height=ALT_INF, margin=dict(l=5, r=10, t=35, b=40), xaxis=dict(tickfont=dict(color="white", size=16)), yaxis=dict(showticklabels=False, range=[montos6.min()*-0.4, montos6.max()*1.4]), showlegend=False)
+
+        # Línea de tendencia y Porcentajes
+        fig4.add_trace(go.Scatter(
+            x=data_usd['Fecha_Txt'], y=data_usd['Variacion'], yaxis="y2",
+            mode='lines', line=dict(color='#4A5568', width=1.5, dash='dot'),
+            hoverinfo='skip'
+        ))
+
+        for i, row in data_usd.iterrows():
+            color_var = "#2F855A" if row['Variacion'] >= 0 else "#C53030"
+            fig4.add_trace(go.Scatter(
+                x=[row['Fecha_Txt']], y=[row['Variacion']], yaxis="y2",
+                mode='markers+text',
+                text=[f"<b>{fix_percent(row['Variacion'])}</b>"],
+                textposition="bottom center",
+                textfont=dict(family="Poppins", size=12, color=color_var),
+                marker=dict(size=6, color="#A0AEC0"),
+                showlegend=False
+            ))
+
+        fig4.update_layout(
+            plot_bgcolor='white', paper_bgcolor='rgba(0,0,0,0)', height=350, 
+            margin=dict(l=10, r=10, t=10, b=10),
+            xaxis=dict(type='category', showgrid=False, tickfont=dict(color="#000000", size=12)),
+            yaxis=dict(showgrid=True, gridcolor='#edf2f7', tickfont=dict(color="#000000", size=12)),
+            yaxis2=dict(overlaying='y', side='right', showgrid=False, showticklabels=False),
+            showlegend=False, hovermode="x unified"
+        )
+        st.plotly_chart(fig4, use_container_width=True, config={'displayModeBar': False})
+
+    with col_met:
+        st.markdown("<div style='margin-top: 50px;'></div>", unsafe_allow_html=True)
+        st.metric("Máximo Detectado", f"{monto_alto:,.1f} MM", delta=var_alto)
+        st.markdown("<br><br>", unsafe_allow_html=True)
+        st.metric("Mínimo Detectado", f"{monto_bajo:,.1f} MM", delta=var_bajo, delta_color="inverse")
+
+except Exception as e: 
+    st.error(f"Error en Reservas $: {e}")
+
+# ==========================================
+# FILA FINAL: GRAFICO 5 Y GRAFICO 6 (50/50)
+# ==========================================
+col_over_izq, col_over_der = st.columns([2, 2])
+
+# GRAFICO 5: TASA OVERNIGHT DIARIA (FILTRADO SIN CEROS)
+with col_over_izq:
+    try:
+        df_over = pd.read_excel(ruta, sheet_name='Tasa Overnight Diaria', usecols=[0, 7])
+        df_over.columns = ['Fecha', 'Promedio']
+        df_over['Fecha_DT'] = pd.to_datetime(df_over['Fecha'])
+        
+        hoy = datetime.now()
+        # Filtramos por mes/año actual Y que el valor sea mayor a 0
+        data_over = df_over[
+            (df_over['Fecha_DT'].dt.month == hoy.month) & 
+            (df_over['Fecha_DT'].dt.year == hoy.year) &
+            (df_over['Promedio'] > 0)
+        ].copy()
+        
+        data_over = data_over.sort_values('Fecha_DT')
+
+        st.markdown("""
+            <div class="contenedor-titulos">
+                <p class="grafico-titulo" style="color: #607D8B;">Tasa Overnight Diaria</p>
+                <p class="grafico-subtitulo">Promedio diario > 0% (Días hábiles) - Mes Actual</p>
+            </div>
+        """, unsafe_allow_html=True)
+        
+        fig5 = go.Figure()
+        
+        fig5.add_trace(go.Scatter(
+            x=data_over['Fecha_DT'].dt.strftime('%d-%m'), 
+            y=data_over['Promedio'], 
+            mode='lines+markers+text',
+            text=data_over['Promedio'].apply(lambda x: f"<b>{x:,.2f}</b>"),
+            textposition="top center",
+            line=dict(color='#607D8B', width=3), # Nuevo color Gris Azulado
+            marker=dict(size=8, color='#fd941c', line=dict(width=1, color='white')),
+            textfont=dict(family="Poppins", size=12, color="#607D8B")
+        ))
+
+        fig5.update_layout(
+            plot_bgcolor='white', 
+            paper_bgcolor='rgba(0,0,0,0)',
+            height=350, 
+            margin=dict(l=10, r=10, t=10, b=10),
+            xaxis=dict(
+                type='category', 
+                showgrid=False,
+                tickfont=dict(family="Poppins", size=12, color="#000000")
+            ),
+            yaxis=dict(
+                showgrid=True, 
+                gridcolor='#edf2f7',
+                tickfont=dict(family="Poppins", size=12, color="#000000")
+            ),
+            showlegend=False,
+            hovermode="x unified"
+        )
+        st.plotly_chart(fig5, use_container_width=True, config={'displayModeBar': False})
+        
+    except Exception as e:
+        st.error(f"Error en Tasa Overnight: {e}")
+
+# GRAFICO 6: TASA OVERNIGHT MENSUAL (CORREGIDO Y OPTIMIZADO)
+with col_over_der:
+    try:
+        df_mensual = pd.read_excel(ruta, sheet_name='Tasa Overnight Mensual', usecols=[0, 1, 2, 3])
+        
+        # 1. LIMPIEZA DE DATOS: Eliminamos filas donde el 'Monto' sea NaN para evitar las columnas "nan"
+        df_mensual = df_mensual.dropna(subset=[df_mensual.columns[1]])
+        
+        df_mensual.columns = ['Mes', 'Monto', 'Promedio', 'Ponderado']
+        
+        st.markdown("""
+            <div class="contenedor-titulos">
+                <p class="grafico-titulo" style="color: #2471A3;">Tasa Overnight Mensual</p>
+                <p class="grafico-subtitulo">Monto, Promedio y Ponderado por Mes</p>
+            </div>
+        """, unsafe_allow_html=True)
+        
+        fig6 = go.Figure()
+
+        # 1. Serie Montos (#566573)
+        fig6.add_trace(go.Bar(
+            x=df_mensual['Mes'].astype(str), y=df_mensual['Monto'],
+            name='Monto', marker_color='#566573',
+            text=df_mensual['Monto'].apply(format_mm), 
+            textposition='inside',
+            insidetextanchor='middle',
+            textfont=dict(family="Poppins", size=11, color="white")
+        ))
+
+        # 2. Serie Promedio (#2471A3)
+        fig6.add_trace(go.Bar(
+            x=df_mensual['Mes'].astype(str), y=df_mensual['Promedio'],
+            name='Promedio', marker_color='#2471A3',
+            text=df_mensual['Promedio'].apply(lambda x: f"<b>{x:,.2f}</b>"), 
+            textposition='outside',
+            textfont=dict(family="Poppins", size=11, color="#2471A3")
+        ))
+
+        # 3. Serie Ponderado (#C4E0F2)
+        fig6.add_trace(go.Bar(
+            x=df_mensual['Mes'].astype(str), y=df_mensual['Ponderado'],
+            name='Ponderado', marker_color='#C4E0F2',
+            text=df_mensual['Ponderado'].apply(lambda x: f"<b>{x:,.2f}</b>"), 
+            textposition='outside',
+            textfont=dict(family="Poppins", size=11, color="#566573")
+        ))
+
+        fig6.update_layout(
+            plot_bgcolor='white', 
+            paper_bgcolor='rgba(0,0,0,0)',
+            height=350, 
+            margin=dict(l=10, r=10, t=50, b=10),
+            
+            # --- MEJORA DE ARMONÍA ---
+            bargap=0.25,      # Espacio entre grupos de meses
+            bargroupgap=0.1,  # Espacio mínimo entre las 3 barras del mes
+            
+            xaxis=dict(
+                showgrid=False, 
+                tickfont=dict(family="Poppins", size=12, color="#000000")
+            ),
+            yaxis=dict(
+                showgrid=True, 
+                gridcolor='#f0f2f6', # Gris más suave para armonía
+                tickfont=dict(family="Poppins", size=12, color="#000000")
+            ),
+            barmode='group',
+            legend=dict(
+                orientation="h", 
+                yanchor="bottom", 
+                y=1.05, 
+                xanchor="center", 
+                x=0.5,
+                font=dict(family="Poppins", size=11, color="#000000")
+            )
+        )
+
+        # Cálculo dinámico del rango para que las etiquetas superiores no se corten
+        max_val = df_mensual[['Monto', 'Promedio', 'Ponderado']].max().max()
+        fig6.update_yaxes(range=[0, max_val * 1.25])
+        
         st.plotly_chart(fig6, use_container_width=True, config={'displayModeBar': False})
-        st.markdown('<p class="concepto-texto">TOTAL EN DIVISAS QUE EL BCV TIENE EN RESGUARDO, YA SEA EN SUS PROPIAS ARCAS O EN CUENTAS DE BANCOS FUERA DE VENEZUELA.', unsafe_allow_html=True)
-    except Exception as e: st.error(f"Error G6: {e}")
+
+    except Exception as e:
+        st.error(f"Error en Tasa Mensual: {e}")
