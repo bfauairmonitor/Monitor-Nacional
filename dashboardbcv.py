@@ -114,7 +114,7 @@ with col_sup_2:
         fig2 = go.Figure(go.Bar(
             x=fechas2, y=df2.iloc[:, 1]/1000, 
             text=[f"{v/1000:,.3f}MM" for v in df2.iloc[:, 1]], 
-            textposition='outside', marker_color=C_BLANCO, cliponaxis=TRUE, 
+            textposition='outside', marker_color=C_BLANCO, cliponaxis=FALSE, 
             textfont=dict(size=24, color=C_AZUL), width=0.7
         ))
         fig2.update_layout(
