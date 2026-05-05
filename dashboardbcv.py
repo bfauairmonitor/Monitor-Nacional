@@ -43,7 +43,7 @@ st.markdown(f"""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700;900&display=swap');
 [data-testid="stHeader"], header {{ display: none !important; height: 0px !important; }}
-.stApp {{ margin-top: -90px !important; background-color: {C_FONDO} !important; }}
+.stApp {{ margin-top: 0px !important; background-color: {C_FONDO} !important; }}
 
 .main .block-container {{ padding: 0px .5rem !important; max-width: 100%; overflow: hidden !important;}}
 html, body, .main {{ 
