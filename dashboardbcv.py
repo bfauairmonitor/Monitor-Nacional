@@ -115,7 +115,7 @@ with col_sup_2:
             x=fechas2, y=df2.iloc[:, 1]/1000, 
             text=[f"{v/1000:,.3f}MM" for v in df2.iloc[:, 1]], 
             textposition='outside', marker_color=C_AZUL, cliponaxis=False, 
-            textfont=dict(size=24, color=C_BLANCO), width=1
+            textfont=dict(size=24, color=C_BLANCO), width=0.9
         ))
         fig2.update_layout(
             title=dict(text="RESERVAS EXCEDENTARIAS BCV", font=dict(color=C_BLANCO)), 
