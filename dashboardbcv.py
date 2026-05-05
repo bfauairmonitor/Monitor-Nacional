@@ -60,7 +60,6 @@ html, body, .main {{
 }}
 .stMainBlockContainer {{
     padding:0px;
-    margin:0px;
     }}
 </style>
 """, unsafe_allow_html=True)
