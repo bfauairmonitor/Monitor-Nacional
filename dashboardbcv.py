@@ -59,7 +59,6 @@ html, body, .main {{
     min-height: 40px; 
 }}
 .stMainBlockContainer {{
-    padding:0px;
     }}
 </style>
 """, unsafe_allow_html=True)
