@@ -45,7 +45,7 @@ st.markdown(f"""
 [data-testid="stHeader"], header {{ display: none !important; height: 0px !important; }}
 .stApp {{ margin-top: -90px !important; background-color: {C_FONDO} !important; }}
 
-.main .block-container {{ padding: 0px 1rem !important; max-width: 100%; overflow: hidden !important;}}
+.main .block-container {{ padding: 0px .5rem !important; max-width: 100%; overflow: hidden !important;}}
 html, body, .main {{ 
     font-family: 'Roboto', sans-serif; 
     overflow: hidden; 
