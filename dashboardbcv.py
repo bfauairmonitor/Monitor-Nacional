@@ -60,7 +60,7 @@ html, body, .main {{
     min-height: 40px; 
 }}
 .stMainBlockContainer {{
-    padding:10px 15px 0px 15px
+    padding:10px 20px 0px 20px
     }}
 </style>
 """, unsafe_allow_html=True)
