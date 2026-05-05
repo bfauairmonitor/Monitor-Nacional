@@ -10,6 +10,7 @@ from datetime import datetime, timedelta, timezone
 # ==========================================
 REFRESH_INT = 600 
 C_FONDO = "#0E1117"
+C_FONDOC = "#1C2F40"
 C_AZUL = "#2B5DDA"
 C_TITULO = "#87CEEB"
 C_NARANJA = "#FFDEAD"
@@ -49,7 +50,7 @@ st.markdown(f"""
 html, body, .main {{ 
     font-family: 'Roboto', sans-serif; 
     overflow: hidden; 
-    background-color: {C_FONDO} !important;
+    background-color: {C_FONDOC} !important;
     color: {C_BLANCO};
 }}
 .concepto-texto {{
