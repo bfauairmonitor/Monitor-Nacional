@@ -115,7 +115,7 @@ with col_sup_2:
             x=fechas2, y=df2.iloc[:, 1]/1000, 
             text=[f"{v/1000:,.3f}MM" for v in df2.iloc[:, 1]], 
             textposition='outside', marker_color=C_AZUL, cliponaxis=False, 
-            textfont=dict(size=20, color=C_BLANCO), width=0.6
+            textfont=dict(size=24, color=C_BLANCO), width=0.8
         ))
         fig2.update_layout(
             title=dict(text="RESERVAS EXCEDENTARIAS BCV", font=dict(color=C_BLANCO)), 
@@ -164,7 +164,7 @@ with col_inf_1:
         df_f5 = df5.sort_values('Fecha_DT').tail(4)
         fechas5, montos5, var5 = [d.strftime('%d/%m/%Y') for d in df_f5['Fecha_DT']], df_f5.iloc[:, 1] / 1000000, df_f5.iloc[:, 2]
         fig5 = go.Figure()
-        fig5.add_trace(go.Bar(x=fechas5, y=montos5, text=[f"{int(v):,}MM" for v in montos5], textposition='outside', marker_color=C_BARRA_INF, textfont=dict(color=C_BLANCO, size=20), width=0.4))
+        fig5.add_trace(go.Bar(x=fechas5, y=montos5, text=[f"{int(v):,}MM" for v in montos5], textposition='outside', marker_color=C_BARRA_INF, textfont=dict(color=C_BLANCO, size=24), width=0.6))
         escala5 = montos5.max() / (var5.abs().max() if var5.abs().max() != 0 else 1)
         fig5.add_trace(go.Scatter(x=fechas5, y=var5 * escala5 * 0.7, mode='lines+markers+text', text=[f"{v:.2f}%" for v in var5], textposition="top center", line=dict(color=C_NARANJA, width=3), textfont=dict(color=C_NARANJA, size=18), cliponaxis=False))
         fig5.update_layout(title=dict(text="LIQUIDÉZ MONETARIA BCV", font=dict(color=C_BLANCO)), paper_bgcolor=C_FONDO, plot_bgcolor=C_FONDO, hovermode=False, height=ALT_INF, margin=dict(l=10, r=10, t=35, b=40), xaxis=dict(tickfont=dict(color=C_BLANCO, size=15)), yaxis=dict(showticklabels=False, range=[montos5.min()*-0.4, montos5.max()*1.4]), showlegend=False)
@@ -180,7 +180,7 @@ with col_inf_2:
         df_f4 = df4.sort_values('Fecha_DT').tail(4)
         fechas4, montos4, var4 = [d.strftime('%d/%m/%Y') for d in df_f4['Fecha_DT']], df_f4.iloc[:, 1] / 1000000, df_f4.iloc[:, 2]
         fig4 = go.Figure()
-        fig4.add_trace(go.Bar(x=fechas4, y=montos4, text=[f"{v:,.1f}MM" for v in montos4], textposition='outside', marker_color=C_BARRA_BASE, textfont=dict(color=C_BLANCO, size=20), width=0.4))
+        fig4.add_trace(go.Bar(x=fechas4, y=montos4, text=[f"{v:,.1f}MM" for v in montos4], textposition='outside', marker_color=C_BARRA_BASE, textfont=dict(color=C_BLANCO, size=24), width=0.6))
         escala4 = montos4.max() / (var4.abs().max() if var4.abs().max() != 0 else 1)
         fig4.add_trace(go.Scatter(x=fechas4, y=var4 * escala4 * 0.7, mode='lines+markers+text', text=[f"{v:.2f}%" for v in var4], textposition="top center", line=dict(color=C_NARANJA, width=3), textfont=dict(color=C_NARANJA, size=18), cliponaxis=False))
         fig4.update_layout(title=dict(text="BASE MONETARIA BCV", font=dict(color=C_BLANCO)), paper_bgcolor=C_FONDO, plot_bgcolor=C_FONDO, hovermode=False, height=ALT_INF, margin=dict(l=10, r=10, t=35, b=40), xaxis=dict(tickfont=dict(color=C_BLANCO, size=15)), yaxis=dict(showticklabels=False, range=[montos4.min()*-0.4, montos4.max()*1.4]), showlegend=False)
@@ -196,7 +196,7 @@ with col_inf_3:
         df_f6 = df6.sort_values('Fecha_DT').tail(4)
         fechas6, montos6, var6 = [d.strftime('%d/%m/%Y') for d in df_f6['Fecha_DT']], df_f6.iloc[:, 1], df_f6.iloc[:, 2]
         fig6 = go.Figure()
-        fig6.add_trace(go.Bar(x=fechas6, y=montos6, text=[f"{int(v):,}MM" for v in montos6], textposition='outside', marker_color=C_BARRA_RES, textfont=dict(color=C_BLANCO, size=20), width=0.5))
+        fig6.add_trace(go.Bar(x=fechas6, y=montos6, text=[f"{int(v):,}MM" for v in montos6], textposition='outside', marker_color=C_BARRA_RES, textfont=dict(color=C_BLANCO, size=24), width=0.6))
         escala6 = montos6.max() / (var6.abs().max() if var6.abs().max() != 0 else 1)
         fig6.add_trace(go.Scatter(x=fechas6, y=var6 * escala6 * 0.7, mode='lines+markers+text', text=[f"{v:.2f}%" for v in var6], textposition="top center", line=dict(color=C_NARANJA, width=3), textfont=dict(color=C_NARANJA, size=19), cliponaxis=False))
         fig6.update_layout(title=dict(text="RESERVAS INTERNACIONALES BCV", font=dict(color=C_BLANCO)), paper_bgcolor=C_FONDO, plot_bgcolor=C_FONDO, hovermode=False, height=ALT_INF, margin=dict(l=10, r=10, t=35, b=40), xaxis=dict(tickfont=dict(color=C_BLANCO, size=16)), yaxis=dict(showticklabels=False, range=[montos6.min()*-0.4, montos6.max()*1.4]), showlegend=False)
