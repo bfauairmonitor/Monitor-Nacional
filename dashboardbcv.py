@@ -43,12 +43,13 @@ if "last_refresh" not in st.session_state:
 st.markdown(f"""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@300..700&display=swap');
 [data-testid="stHeader"], header {{ display: none !important; height: 0px !important; }}
 .stApp {{ margin-top: 0px !important; background-color: {C_FONDO} !important; }}
 
 .main .block-container {{ padding: 0px .5rem !important; max-width: 100%; overflow: hidden !important;}}
 html, body, .main {{ 
-    font-family: 'Roboto', sans-serif; 
+    font-family: 'Quicksand', sans-serif; 
     overflow: hidden; 
     background-color: {C_FONDOC} !important;
     color: {C_BLANCO};
