@@ -21,8 +21,7 @@ C_BARRA_BASE = "#2F4F4F"
 C_BARRA_RES = "#191970"  
 
 # ALTURAS DEFINIDAS POR FILA
-ALT_SUP = 230
-ALT_INF = 230
+
 
 # ==========================================
 # 2. CONFIGURACIÓN DE PÁGINA
