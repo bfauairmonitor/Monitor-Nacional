@@ -10,7 +10,7 @@ from datetime import datetime, timedelta, timezone
 # ==========================================
 REFRESH_INT = 600 
 C_FONDO = "#0E1117"
-C_FONDOC = "#1C2F40"
+C_FONDOC = "#133557"
 C_AZUL = "#2B5DDA"
 C_TITULO = "#87CEEB"
 C_NARANJA = "#FFDEAD"
