@@ -45,14 +45,12 @@ st.markdown(f"""
 [data-testid="stHeader"], header {{ display: none !important; height: 0px !important; }}
 .stApp {{ margin-top: -90px !important; background-color: {C_FONDO} !important; }}
 
-.main .block-container {{ padding: 0px !important; max-width: 100%; overflow: hidden !important;}}
+.main .block-container {{ padding: 0px 1rem !important; max-width: 100%; overflow: hidden !important;}}
 html, body, .main {{ 
     font-family: 'Roboto', sans-serif; 
     overflow: hidden; 
     background-color: {C_FONDO} !important;
     color: {C_BLANCO};
-    padding:0;
-    marging:0;
 }}
 .concepto-texto {{
     font-size: 20px;
@@ -60,6 +58,10 @@ html, body, .main {{
     text-align: center;
     min-height: 40px; 
 }}
+.stMainBlockContainer {{
+    padding:0px;
+    margin:0px;
+    }}
 </style>
 """, unsafe_allow_html=True)
 
