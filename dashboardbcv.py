@@ -42,7 +42,7 @@ if "expanded_graph" not in st.session_state:
     st.session_state.expanded_graph = None
 
 # ==========================================
-# 3. ESTILOS CSS (CORREGIDO PARA QUITAR EL FONDO AZUL)
+# 3. ESTILOS CSS (RESTAURADOS AL ORIGINAL)
 # ==========================================
 st.markdown(f"""
 <style>
@@ -60,7 +60,7 @@ html, body, .main {{
     color: {C_BLANCO};
 }}
 
-/* BOTÓN VOLVER (ESTILO NORMAL) */
+/* BOTÓN VOLVER */
 div.stButton > button {{
     background-color: {C_AZUL} !important;
     color: white !important;
@@ -69,7 +69,7 @@ div.stButton > button {{
     padding: 0.5rem 1rem !important;
 }}
 
-/* FORZAR DESCRIPCIONES COMO LINKS (SIN FONDO, COLOR NARANJA) */
+/* FORZAR DESCRIPCIONES COMO LINKS (SIN RECORTES) */
 div[data-testid="stColumn"] div.stButton > button {{
     background-color: transparent !important;
     background: none !important;
@@ -90,14 +90,6 @@ div[data-testid="stColumn"] div.stButton > button:hover {{
     color: {C_NARANJA} !important;
     text-decoration: underline !important;
     background-color: transparent !important;
-}}
-
-div[data-testid="stColumn"] div.stButton > button:active, 
-div[data-testid="stColumn"] div.stButton > button:focus {{
-    background-color: transparent !important;
-    color: {C_NARANJA} !important;
-    box-shadow: none !important;
-    border: none !important;
 }}
 
 .stMainBlockContainer {{
@@ -158,20 +150,29 @@ except: pass
 
 # G2
 try:
-    df2 = dict_hojas['Reservas Bancarias Excedentari'].iloc[:, [0, 1]].dropna().head(7).iloc[::-1]
+    df2 = dict_hojas['Reservas Bancarias Excedentari'].iloc[:, [0, 1, 2]].dropna().head(7).iloc[::-1]
     fechas2 = [d.strftime('%d/%m/%Y') for d in pd.to_datetime(df2.iloc[:, 0])]
+    montos2 = df2.iloc[:, 1]/1000
+    var2 = df2.iloc[:, 2] 
     fig2 = go.Figure(go.Bar(
-        x=fechas2, y=df2.iloc[:, 1]/1000, 
-        text=[f"{v/1000:,.3f}MM" for v in df2.iloc[:, 1]], 
+        x=fechas2, y=montos2, 
+        text=[f"{v:,.3f}MM" for v in montos2], 
         textposition='outside', marker_color=C_AZUL, cliponaxis=False, 
         textfont=dict(size=24, color=C_BLANCO), width=0.9
+    ))
+    escala2 = montos2.max() / (var2.abs().max() if var2.abs().max() != 0 else 1)
+    fig2.add_trace(go.Scatter(
+        x=fechas2, y=var2 * escala2 * 0.7, mode='lines+markers+text', 
+        text=[f"{v:.2f}%" for v in var2], 
+        textposition="top center", line=dict(color=C_NARANJA, width=3), 
+        textfont=dict(color=C_NARANJA, size=18), cliponaxis=False
     ))
     fig2.update_layout(
         title=dict(text="Reservas Excedentarias BCV", font=dict(color=C_BLANCO)), 
         paper_bgcolor=C_FONDO, plot_bgcolor=C_FONDO, hovermode=False,
         height=ALT_SUP, margin=dict(l=10, r=10, t=40, b=40), 
         xaxis=dict(tickangle=-30, tickfont=dict(color=C_BLANCO, size=18)), 
-        yaxis=dict(gridcolor=C_GRIS_GRID, tickfont=dict(color=C_BLANCO)), font=dict(color=C_BLANCO)
+        yaxis=dict(showticklabels=False), font=dict(color=C_BLANCO), showlegend=False
     )
     content_map['G2'] = (fig2, "Cantidad de dinero extra que poseen los bancos en el BCV por encima de lo que la ley indica (Encaje legal).")
 except: pass
@@ -200,7 +201,8 @@ try:
     df5 = dict_hojas['Liquidez Monetaria'].iloc[:, [0, 6, 7]].copy()
     df5['Fecha_DT'] = pd.to_datetime(df5.iloc[:, 0])
     df_f5 = df5.sort_values('Fecha_DT').tail(4)
-    fechas5, montos5, var5 = [d.strftime('%d/%m/%Y') for d in df_f5['Fecha_DT']], df_f5.iloc[:, 1] / 1000000, df_f5.iloc[:, 2]
+    fechas5, montos5 = [d.strftime('%d/%m/%Y') for d in df_f5['Fecha_DT']], df_f5.iloc[:, 1] / 1000000
+    var5 = df_f5.iloc[:, 2] 
     fig5 = go.Figure()
     fig5.add_trace(go.Bar(x=fechas5, y=montos5, text=[f"{int(v):,}MM" for v in montos5], textposition='outside', marker_color=C_BARRA_INF, textfont=dict(color=C_BLANCO, size=24), width=0.6))
     escala5 = montos5.max() / (var5.abs().max() if var5.abs().max() != 0 else 1)
@@ -214,7 +216,8 @@ try:
     df4 = dict_hojas['Base Monetaria'].iloc[:, [0, 1, 2]].copy()
     df4['Fecha_DT'] = pd.to_datetime(df4.iloc[:, 0])
     df_f4 = df4.sort_values('Fecha_DT').tail(4)
-    fechas4, montos4, var4 = [d.strftime('%d/%m/%Y') for d in df_f4['Fecha_DT']], df_f4.iloc[:, 1] / 1000000, df_f4.iloc[:, 2]
+    fechas4, montos4 = [d.strftime('%d/%m/%Y') for d in df_f4['Fecha_DT']], df_f4.iloc[:, 1] / 1000000
+    var4 = df_f4.iloc[:, 2] 
     fig4 = go.Figure()
     fig4.add_trace(go.Bar(x=fechas4, y=montos4, text=[f"{v:,.1f}MM" for v in montos4], textposition='outside', marker_color=C_BARRA_BASE, textfont=dict(color=C_BLANCO, size=24), width=0.6))
     escala4 = montos4.max() / (var4.abs().max() if var4.abs().max() != 0 else 1)
@@ -228,7 +231,8 @@ try:
     df6 = dict_hojas['Resev. Internacionales $'].iloc[:, [0, 3, 4]].copy()
     df6['Fecha_DT'] = pd.to_datetime(df6.iloc[:, 0])
     df_f6 = df6.sort_values('Fecha_DT').tail(4)
-    fechas6, montos6, var6 = [d.strftime('%d/%m/%Y') for d in df_f6['Fecha_DT']], df_f6.iloc[:, 1], df_f6.iloc[:, 2]
+    fechas6, montos6 = [d.strftime('%d/%m/%Y') for d in df_f6['Fecha_DT']], df_f6.iloc[:, 1]
+    var6 = df_f6.iloc[:, 2] 
     fig6 = go.Figure()
     fig6.add_trace(go.Bar(x=fechas6, y=montos6, text=[f"{int(v):,}MM" for v in montos6], textposition='outside', marker_color=C_BARRA_RES, textfont=dict(color=C_BLANCO, size=24), width=0.6))
     escala6 = montos6.max() / (var6.abs().max() if var6.abs().max() != 0 else 1)
@@ -237,47 +241,36 @@ try:
     content_map['G6'] = (fig6, "Total en divisas que el BCV tiene en resguardo, ya sea en sus propias arcas o en cuentas de bancos fuera de Venezuela.")
 except: pass
 
-
 # ==========================================
-# 6. RENDERIZADO LÓGICO (DASHBOARD O FULLSCREEN)
+# 6. RENDERIZADO LÓGICO
 # ==========================================
 
-# VISTA PANTALLA COMPLETA
 if st.session_state.expanded_graph:
     id_g = st.session_state.expanded_graph
     fig_full, desc_full = content_map[id_g]
-    
     if st.button("VOLVER"):
         st.session_state.expanded_graph = None
         st.rerun()
-    
-    # Mostrar gráfico a 100%
     fig_full.update_layout(height=ALT_FULL)
-    st.plotly_chart(fig_full, width='stretch', config={'displayModeBar': False})
-    # Mostrar descripción debajo
+    st.plotly_chart(fig_full, use_container_width=True, config={'displayModeBar': False})
     st.markdown(f'<p class="concepto-texto">{desc_full}</p>', unsafe_allow_html=True)
-
-# VISTA DASHBOARD (GRID)
 else:
     col_sup_1, col_sup_2, col_sup_3 = st.columns([0.35, 0.35, 0.30])
-
     with col_sup_1:
         if 'G1' in content_map:
-            st.plotly_chart(content_map['G1'][0], width='stretch', config={'displayModeBar': False})
+            st.plotly_chart(content_map['G1'][0], use_container_width=True, config={'displayModeBar': False})
             if st.button(content_map['G1'][1], key="btn_g1"):
                 st.session_state.expanded_graph = 'G1'
                 st.rerun()
-
     with col_sup_2:
         if 'G2' in content_map:
-            st.plotly_chart(content_map['G2'][0], width='stretch', config={'displayModeBar': False})
+            st.plotly_chart(content_map['G2'][0], use_container_width=True, config={'displayModeBar': False})
             if st.button(content_map['G2'][1], key="btn_g2"):
                 st.session_state.expanded_graph = 'G2'
                 st.rerun()
-
     with col_sup_3:
         if 'G3' in content_map:
-            st.plotly_chart(content_map['G3'][0], width='stretch', config={'displayModeBar': False})
+            st.plotly_chart(content_map['G3'][0], use_container_width=True, config={'displayModeBar': False})
             if st.button(content_map['G3'][1], key="btn_g3"):
                 st.session_state.expanded_graph = 'G3'
                 st.rerun()
@@ -285,24 +278,21 @@ else:
     st.markdown(f"<hr style='border: 0.5px solid {C_GRIS_GRID}; margin: 15px 0;'>", unsafe_allow_html=True)
 
     col_inf_1, col_inf_2, col_inf_3 = st.columns([0.33, 0.33, 0.34])
-
     with col_inf_1:
         if 'G5' in content_map:
-            st.plotly_chart(content_map['G5'][0], width='stretch', config={'displayModeBar': False})
+            st.plotly_chart(content_map['G5'][0], use_container_width=True, config={'displayModeBar': False})
             if st.button(content_map['G5'][1], key="btn_g5"):
                 st.session_state.expanded_graph = 'G5'
                 st.rerun()
-
     with col_inf_2:
         if 'G4' in content_map:
-            st.plotly_chart(content_map['G4'][0], width='stretch', config={'displayModeBar': False})
+            st.plotly_chart(content_map['G4'][0], use_container_width=True, config={'displayModeBar': False})
             if st.button(content_map['G4'][1], key="btn_g4"):
                 st.session_state.expanded_graph = 'G4'
                 st.rerun()
-
     with col_inf_3:
         if 'G6' in content_map:
-            st.plotly_chart(content_map['G6'][0], width='stretch', config={'displayModeBar': False})
+            st.plotly_chart(content_map['G6'][0], use_container_width=True, config={'displayModeBar': False})
             if st.button(content_map['G6'][1], key="btn_g6"):
                 st.session_state.expanded_graph = 'G6'
                 st.rerun()
