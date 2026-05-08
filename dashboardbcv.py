@@ -252,25 +252,29 @@ if st.session_state.expanded_graph:
         st.session_state.expanded_graph = None
         st.rerun()
     fig_full.update_layout(height=ALT_FULL)
-    st.plotly_chart(fig_full, use_container_width=True, config={'displayModeBar': False})
+    # Cambio aquí: width="stretch" en lugar de use_container_width=True
+    st.plotly_chart(fig_full, width="stretch", config={'displayModeBar': False})
     st.markdown(f'<p class="concepto-texto">{desc_full}</p>', unsafe_allow_html=True)
 else:
     col_sup_1, col_sup_2, col_sup_3 = st.columns([0.35, 0.35, 0.30])
     with col_sup_1:
         if 'G1' in content_map:
-            st.plotly_chart(content_map['G1'][0], use_container_width=True, config={'displayModeBar': False})
+            # Cambio aquí: width="stretch"
+            st.plotly_chart(content_map['G1'][0], width="stretch", config={'displayModeBar': False})
             if st.button(content_map['G1'][1], key="btn_g1"):
                 st.session_state.expanded_graph = 'G1'
                 st.rerun()
     with col_sup_2:
         if 'G2' in content_map:
-            st.plotly_chart(content_map['G2'][0], use_container_width=True, config={'displayModeBar': False})
+            # Cambio aquí: width="stretch"
+            st.plotly_chart(content_map['G2'][0], width="stretch", config={'displayModeBar': False})
             if st.button(content_map['G2'][1], key="btn_g2"):
                 st.session_state.expanded_graph = 'G2'
                 st.rerun()
     with col_sup_3:
         if 'G3' in content_map:
-            st.plotly_chart(content_map['G3'][0], use_container_width=True, config={'displayModeBar': False})
+            # Cambio aquí: width="stretch"
+            st.plotly_chart(content_map['G3'][0], width="stretch", config={'displayModeBar': False})
             if st.button(content_map['G3'][1], key="btn_g3"):
                 st.session_state.expanded_graph = 'G3'
                 st.rerun()
@@ -280,19 +284,22 @@ else:
     col_inf_1, col_inf_2, col_inf_3 = st.columns([0.33, 0.33, 0.34])
     with col_inf_1:
         if 'G5' in content_map:
-            st.plotly_chart(content_map['G5'][0], use_container_width=True, config={'displayModeBar': False})
+            # Cambio aquí: width="stretch"
+            st.plotly_chart(content_map['G5'][0], width="stretch", config={'displayModeBar': False})
             if st.button(content_map['G5'][1], key="btn_g5"):
                 st.session_state.expanded_graph = 'G5'
                 st.rerun()
     with col_inf_2:
         if 'G4' in content_map:
-            st.plotly_chart(content_map['G4'][0], use_container_width=True, config={'displayModeBar': False})
+            # Cambio aquí: width="stretch"
+            st.plotly_chart(content_map['G4'][0], width="stretch", config={'displayModeBar': False})
             if st.button(content_map['G4'][1], key="btn_g4"):
                 st.session_state.expanded_graph = 'G4'
                 st.rerun()
     with col_inf_3:
         if 'G6' in content_map:
-            st.plotly_chart(content_map['G6'][0], use_container_width=True, config={'displayModeBar': False})
+            # Cambio aquí: width="stretch"
+            st.plotly_chart(content_map['G6'][0], width="stretch", config={'displayModeBar': False})
             if st.button(content_map['G6'][1], key="btn_g6"):
                 st.session_state.expanded_graph = 'G6'
                 st.rerun()
