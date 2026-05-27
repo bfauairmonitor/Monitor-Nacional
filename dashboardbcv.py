@@ -227,6 +227,7 @@ try:
 except: pass
 
 # G6
+# G6
 try:
     df6 = dict_hojas['Resev. Internacionales $'].iloc[:, [0, 3, 4]].copy()
     df6['Fecha_DT'] = pd.to_datetime(df6.iloc[:, 0])
@@ -236,7 +237,13 @@ try:
     fig6 = go.Figure()
     fig6.add_trace(go.Bar(x=fechas6, y=montos6, text=[f"{int(v):,}MM" for v in montos6], textposition='outside', marker_color=C_BARRA_RES, textfont=dict(color=C_BLANCO, size=24), width=0.6))
     escala6 = montos6.max() / (var6.abs().max() if var6.abs().max() != 0 else 1)
-    fig6.add_trace(go.Scatter(x=fechas6, y=var6 * escala6 * 0.7, mode='lines+markers+text', text=[f"{v:.2f}%" for v in var6], textposition="top center", line=dict(color=C_NARANJA, width=3), textfont=dict(color=C_NARANJA, size=19), cliponaxis=False))
+    
+    # CORRECCIÓN AQUÍ: Multiplicamos var6 por 100 para mostrar el porcentaje correcto
+    fig6.add_trace(go.Scatter(x=fechas6, y=var6 * escala6 * 0.7, mode='lines+markers+text', 
+                              text=[f"{v*100:.2f}%" for v in var6], 
+                              textposition="top center", line=dict(color=C_NARANJA, width=3), 
+                              textfont=dict(color=C_NARANJA, size=19), cliponaxis=False))
+    
     fig6.update_layout(title=dict(text="Reservas Internacionales BCV", font=dict(color=C_BLANCO)), paper_bgcolor=C_FONDO, plot_bgcolor=C_FONDO, hovermode=False, height=ALT_INF, margin=dict(l=10, r=10, t=35, b=40), xaxis=dict(tickfont=dict(color=C_BLANCO, size=16)), yaxis=dict(showticklabels=False, range=[montos6.min()*-0.4, montos6.max()*1.4]), showlegend=False)
     content_map['G6'] = (fig6, "Total en divisas que el BCV tiene en resguardo, ya sea en sus propias arcas o en cuentas de bancos fuera de Venezuela.")
 except: pass
@@ -252,29 +259,25 @@ if st.session_state.expanded_graph:
         st.session_state.expanded_graph = None
         st.rerun()
     fig_full.update_layout(height=ALT_FULL)
-    # Cambio aquí: width="stretch" en lugar de use_container_width=True
-    st.plotly_chart(fig_full, width="stretch", config={'displayModeBar': False})
+    st.plotly_chart(fig_full, use_container_width=True, config={'displayModeBar': False})
     st.markdown(f'<p class="concepto-texto">{desc_full}</p>', unsafe_allow_html=True)
 else:
     col_sup_1, col_sup_2, col_sup_3 = st.columns([0.35, 0.35, 0.30])
     with col_sup_1:
         if 'G1' in content_map:
-            # Cambio aquí: width="stretch"
-            st.plotly_chart(content_map['G1'][0], width="stretch", config={'displayModeBar': False})
+            st.plotly_chart(content_map['G1'][0], use_container_width=True, config={'displayModeBar': False})
             if st.button(content_map['G1'][1], key="btn_g1"):
                 st.session_state.expanded_graph = 'G1'
                 st.rerun()
     with col_sup_2:
         if 'G2' in content_map:
-            # Cambio aquí: width="stretch"
-            st.plotly_chart(content_map['G2'][0], width="stretch", config={'displayModeBar': False})
+            st.plotly_chart(content_map['G2'][0], use_container_width=True, config={'displayModeBar': False})
             if st.button(content_map['G2'][1], key="btn_g2"):
                 st.session_state.expanded_graph = 'G2'
                 st.rerun()
     with col_sup_3:
         if 'G3' in content_map:
-            # Cambio aquí: width="stretch"
-            st.plotly_chart(content_map['G3'][0], width="stretch", config={'displayModeBar': False})
+            st.plotly_chart(content_map['G3'][0], use_container_width=True, config={'displayModeBar': False})
             if st.button(content_map['G3'][1], key="btn_g3"):
                 st.session_state.expanded_graph = 'G3'
                 st.rerun()
@@ -284,22 +287,19 @@ else:
     col_inf_1, col_inf_2, col_inf_3 = st.columns([0.33, 0.33, 0.34])
     with col_inf_1:
         if 'G5' in content_map:
-            # Cambio aquí: width="stretch"
-            st.plotly_chart(content_map['G5'][0], width="stretch", config={'displayModeBar': False})
+            st.plotly_chart(content_map['G5'][0], use_container_width=True, config={'displayModeBar': False})
             if st.button(content_map['G5'][1], key="btn_g5"):
                 st.session_state.expanded_graph = 'G5'
                 st.rerun()
     with col_inf_2:
         if 'G4' in content_map:
-            # Cambio aquí: width="stretch"
-            st.plotly_chart(content_map['G4'][0], width="stretch", config={'displayModeBar': False})
+            st.plotly_chart(content_map['G4'][0], use_container_width=True, config={'displayModeBar': False})
             if st.button(content_map['G4'][1], key="btn_g4"):
                 st.session_state.expanded_graph = 'G4'
                 st.rerun()
     with col_inf_3:
         if 'G6' in content_map:
-            # Cambio aquí: width="stretch"
-            st.plotly_chart(content_map['G6'][0], width="stretch", config={'displayModeBar': False})
+            st.plotly_chart(content_map['G6'][0], use_container_width=True, config={'displayModeBar': False})
             if st.button(content_map['G6'][1], key="btn_g6"):
                 st.session_state.expanded_graph = 'G6'
                 st.rerun()
