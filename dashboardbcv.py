@@ -145,7 +145,7 @@ try:
     content_map['G1'] = (fig1, "Tasa promedio diaria aplicada a préstamos interbancarios o depósitos a muy corto plazo (un día hábil).")
 except: pass
 
-# G2
+# G2 (MODIFICADO EXCLUSIVAMENTE PARA SEPARAR ETIQUETAS)
 try:
     df2 = dict_hojas['Reservas Bancarias Excedentari'].iloc[:, [0, 1, 2]].dropna().head(7).iloc[::-1]
     fechas2 = [d.strftime('%d/%m/%Y') for d in pd.to_datetime(df2.iloc[:, 0])]
@@ -158,11 +158,14 @@ try:
         textfont=dict(size=24, color=C_BLANCO), width=0.9
     ))
     escala2 = montos2.max() / (var2.abs().max() if var2.abs().max() != 0 else 1)
+    
+    # Modificación aquí: Cambiado textposition a "bottom center" y ajustado el multiplicador vertical a 0.2
+    # Esto empuja la línea y sus porcentajes hacia abajo, quedando perfectamente debajo de los montos de la barra.
     fig2.add_trace(go.Scatter(
-        x=fechas2, y=var2 * escala2 * 0.7, mode='lines+markers+text', 
+        x=fechas2, y=var2 * escala2 * 0.2, mode='lines+markers+text', 
         text=[f"{v:.2f}%" for v in var2], 
-        textposition="top center", line=dict(color=C_NARANJA, width=3), 
-        textfont=dict(color=C_NARANJA, size=18), cliponaxis=False
+        textposition="bottom center", line=dict(color=C_NARANJA, width=3), 
+        textfont=dict(color=C_NARANJA, size=15), cliponaxis=False
     ))
     fig2.update_layout(
         title=dict(text="Reservas Excedentarias BCV", font=dict(color=C_BLANCO)), 
