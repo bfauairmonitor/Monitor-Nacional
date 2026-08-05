@@ -179,7 +179,9 @@ except: pass
 
 # G3
 try:
+    # Cambiamos 0:6 por 0:7 para incluir una fila más
     df3 = dict_hojas['Tasa Overnight Mensual'].iloc[0:5, [0, 3]]
+    
     fig3 = go.Figure(go.Scatter(
         x=df3.iloc[:, 0], y=df3.iloc[:, 1], mode='lines+markers+text', 
         text=[f"{val}%" for val in df3.iloc[:, 1]], textposition="top center", 
